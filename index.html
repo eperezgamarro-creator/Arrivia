@@ -465,7 +465,7 @@ loadRegsFromCloud().then(()=>render());
     }
   }catch(e){}
 })();
-setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},30000);
+setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},10000);
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
 function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
