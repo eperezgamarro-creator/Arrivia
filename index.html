@@ -328,7 +328,7 @@ let recog=null;
 async function translateToSpanish(text, sourceLang){
   try{
     const sl=sourceLang||S.lang;
-    const langMap={es:'es',en:'en',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cs',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'el',nl:'nl',ar:'ar'};
+    const langMap={es:'es',en:'en',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cs',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'el',nl:'nl',ar:'ar',lt:'lt',lv:'lv',sk:'sk',sl:'sl',da:'da'};
     const slCode=langMap[sl]||sl;
     if(slCode==='es') return text;
     const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${slCode}|es`;
@@ -354,7 +354,9 @@ function handleVoice(){
     else S.voiceError='';
     updateMicUI();
   };
-  recog.onend=()=>{if(S.voiceState==='listening'){S.voiceState='idle';updateMicUI();}};
+  recog.onend=()=>{
+    if(S.voiceState==='listening'){S.voiceState='idle';updateMicUI();}
+  };
   recog.onresult=async(e)=>{
     S.voiceError='';
     const transcript=Array.from(e.results).map(r=>r[0].transcript).join(' ');
