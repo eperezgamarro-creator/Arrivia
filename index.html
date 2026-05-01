@@ -363,6 +363,11 @@ function handleVoice(){
     S.voiceState='translating';updateMicUI();
     const translated=await translateToSpanish(transcript,S.lang);
     S.pendingVoice=S.pendingVoice?S.pendingVoice+' | '+translated:translated;
+    if(S.regs.length>0){
+      const last=S.regs[S.regs.length-1];
+      last.voiceText=last.voiceText?last.voiceText+' | '+translated:translated;
+      updateVoiceInCloud(last.id,last.voiceText);
+    }
     S.voiceState='done';updateMicUI();
     setTimeout(()=>{S.voiceState='idle';updateMicUI();},2500);
   };
@@ -391,14 +396,52 @@ function updateMicUI(){
   }
 }
 
-/* ── PERSISTENCE ── */
-function saveRegs(){try{localStorage.setItem('arrivia_regs',JSON.stringify(S.regs));localStorage.setItem('arrivia_n',String(regN));}catch(e){}}
-function loadRegs(){try{const r=localStorage.getItem('arrivia_regs');const n=localStorage.getItem('arrivia_n');if(r)S.regs=JSON.parse(r);if(n)regN=parseInt(n)||0;S.adminLight=localStorage.getItem('arrivia_light')==='1';}catch(e){}}
+/* ── SUPABASE ── */
+const SB_URL='https://urrnimiciufpynjjwpvz.supabase.co';
+const SB_KEY='eyJhbGciOiJJUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVycm5pbWljaXVmcHluamp3cHZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxMDI3MDAsImV4cCI6MjA2MTY3ODcwMH0.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+const SB_HDR={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function saveRegToCloud(reg){
+  try{
+    const body={reg_id:reg.id,timestamp:reg.timestamp,operation:reg.operation,operation_label:reg.operationLabel,country_type:reg.countryType||'',country:reg.country||'',tractor:reg.tractor,trailer:reg.trailer||'',reference:reg.reference||'',notes:reg.notes||'',voice_text:reg.voiceText||''};
+    await fetch(SB_URL+'/rest/v1/Registros',{method:'POST',headers:{...SB_HDR,'Prefer':'return=minimal'},body:JSON.stringify(body)});
+  }catch(e){console.error('Supabase save error',e);}
+}
+
+async function loadRegsFromCloud(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/Registros?select=*&order=created_at.asc',{headers:SB_HDR});
+    const data=await r.json();
+    if(Array.isArray(data)){
+      S.regs=data.map(d=>({id:d.reg_id,timestamp:d.timestamp,operation:d.operation,operationLabel:d.operation_label,countryType:d.country_type,country:d.country,tractor:d.tractor,trailer:d.trailer,reference:d.reference,notes:d.notes,voiceText:d.voice_text}));
+      if(S.regs.length>0){
+        const lastN=parseInt(S.regs[S.regs.length-1].id.replace('CAM-',''))||0;
+        if(lastN>regN)regN=lastN;
+      }
+    }
+  }catch(e){console.error('Supabase load error',e);}
+}
+
+async function deleteRegFromCloud(regId){
+  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=eq.'+encodeURIComponent(regId),{method:'DELETE',headers:SB_HDR});}catch(e){}
+}
+
+async function deleteAllRegsFromCloud(){
+  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=neq.impossible',{method:'DELETE',headers:SB_HDR});}catch(e){}
+}
+
+async function updateVoiceInCloud(regId,voiceText){
+  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=eq.'+encodeURIComponent(regId),{method:'PATCH',headers:{...SB_HDR,'Prefer':'return=minimal'},body:JSON.stringify({voice_text:voiceText})});}catch(e){}
+}
+
+/* ── PERSISTENCE (localStorage para preferencias, Supabase para registros) ── */
+function saveRegs(){try{localStorage.setItem('arrivia_n',String(regN));}catch(e){}}
+function loadRegs(){try{const n=localStorage.getItem('arrivia_n');if(n)regN=parseInt(n)||0;S.adminLight=localStorage.getItem('arrivia_light')==='1';}catch(e){}}
 function toggleLight(){S.adminLight=!S.adminLight;try{localStorage.setItem('arrivia_light',S.adminLight?'1':'0');}catch(e){}render();}
 loadRegs();
 if(IS_ADMIN_URL){S.adminAuth=true;S.mode='admin';}
-
-/* ── ACTIONS ── */
+render();
+loadRegsFromCloud().then(()=>render());
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
 function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
@@ -414,8 +457,10 @@ function submitVehicle(){
   if(Object.keys(e).length){S.errors=e;render();return;}
   const id=nextId();
   const ctry=S.country?COUNTRIES.find(c=>c.id===S.country):null;
-  S.regs.push({id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice});
+  const newReg={id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice};
+  S.regs.push(newReg);
   saveRegs();
+  saveRegToCloud(newReg);
   S.screen='confirmation';render();
 }
 function resetKiosk(){stopCountdown();S.screen='language';S.lang='es';S.op=null;S.country=null;S.veh={tractor:'',trailer:'',reference:'',notes:''};S.errors={};S.pendingVoice='';S.voiceState='idle';S.voiceError='';render();}
@@ -431,8 +476,8 @@ function clearDetail(){S.detailReg=null;render();}
 function doSearch(v){S.searchQ=v;render();}
 function setHistFilter(k,v){S.histFilter[k]=v;render();}
 function clearHistFilters(){S.histFilter={op:'',country:'',dateFrom:'',dateTo:''};render();}
-function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();S.detailReg=null;render();}
-function deleteAllRegs(){if(!confirm('¿Eliminar TODOS los registros? Esta acción no se puede deshacer.'))return;S.regs=[];regN=0;saveRegs();S.detailReg=null;render();}
+function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();deleteRegFromCloud(regId);S.detailReg=null;render();}
+function deleteAllRegs(){if(!confirm('¿Eliminar TODOS los registros? Esta acción no se puede deshacer.'))return;S.regs=[];regN=0;saveRegs();deleteAllRegsFromCloud();S.detailReg=null;render();}
 function exportAllPDF(){
   if(!S.regs.length){alert('No hay registros para exportar.');return;}
   const w=window.open('','_blank');
