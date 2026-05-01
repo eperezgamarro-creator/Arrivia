@@ -442,7 +442,17 @@ loadRegs();
 if(IS_ADMIN_URL){S.adminAuth=true;S.mode='admin';}
 render();
 loadRegsFromCloud().then(()=>render());
-// Auto-refresh cada 30s en admin
+// Anti-pausa Supabase: ping cada 4 días
+(async function keepAlive(){
+  try{
+    const last=parseInt(localStorage.getItem('arrivia_ping')||'0');
+    const now=Date.now();
+    if(now-last > 4*24*60*60*1000){
+      await fetch(SB_URL+'/rest/v1/Registros?select=reg_id&limit=1',{headers:SB_HDR});
+      localStorage.setItem('arrivia_ping',String(now));
+    }
+  }catch(e){}
+})();
 setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},30000);
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
