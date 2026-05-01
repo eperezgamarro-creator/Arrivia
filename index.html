@@ -442,6 +442,8 @@ loadRegs();
 if(IS_ADMIN_URL){S.adminAuth=true;S.mode='admin';}
 render();
 loadRegsFromCloud().then(()=>render());
+// Auto-refresh cada 30s en admin
+setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},30000);
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
 function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
