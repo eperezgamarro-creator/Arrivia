@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Registro de Llegada de Camiones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070f1d;--surf:#0c1a31;--card:#102340;--brd:#183353;
+  --blu:#1a6eff;--bld:#1452cc;--amb:#f5a324;--grn:#16c96a;--red:#f04444;
+  --tx:#edf4ff;--tx2:#6da1cc;--tx3:#3a6a90;
+  --hb:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--fb);-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:var(--fb);transition:opacity .15s,background .15s,border-color .15s}
+button:active{opacity:.85}
+input,textarea{font-family:var(--fb)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.kiosk-wrap{min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.kiosk-hdr{background:var(--surf);border-bottom:2px solid var(--brd);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.kiosk-hdr-icon{font-size:26px}
+.kiosk-hdr-title{font-family:var(--hb);font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2)}
+.kiosk-body{flex:1;padding:24px 20px;overflow-y:auto}
+.screen-title{font-family:var(--hb);font-size:30px;font-weight:700;letter-spacing:.5px;text-align:center;color:var(--tx);margin-bottom:24px}
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;max-width:860px;margin:0 auto}
+.btn-lang{background:var(--card);border:2px solid var(--brd);border-radius:12px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--tx);width:100%}
+.btn-lang:hover{border-color:var(--blu);background:#16305a}
+.btn-lang .flag{font-size:38px;line-height:1}
+.btn-lang .lname{font-size:15px;font-weight:700}
+.op-list{display:flex;flex-direction:column;gap:12px;max-width:580px;margin:0 auto}
+.btn-op{background:var(--card);border:2px solid var(--brd);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:18px;color:var(--tx);font-family:var(--hb);font-size:22px;font-weight:700;letter-spacing:.3px;width:100%;text-align:left}
+.btn-op:hover{border-color:var(--blu);background:#16305a}
+.btn-op .icon{font-size:34px;flex-shrink:0}
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;max-width:860px;margin:0 auto}
+.btn-country{background:var(--card);border:2px solid var(--brd);border-radius:8px;padding:13px 10px;color:var(--tx);font-size:14px;font-weight:600;text-align:center;width:100%}
+.btn-country:hover{border-color:var(--blu);background:#16305a}
+.form-group{margin-bottom:16px}
+.field-label{display:block;font-family:var(--hb);font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:7px;font-weight:700}
+.field-label.err{color:var(--red)}
+.field-input{width:100%;padding:14px 16px;background:var(--card);border:2px solid var(--brd);border-radius:8px;color:var(--tx);font-size:18px;outline:none;-webkit-appearance:none}
+.field-input.err{border-color:var(--red)}
+.field-input:focus{border-color:var(--blu)}
+.field-input::placeholder{color:var(--tx3)}
+textarea.field-input{resize:none;min-height:90px}
+.field-err{color:var(--red);font-size:12px;margin-top:4px;display:block}
+.form-wrap{max-width:580px;margin:0 auto;width:100%}
+.form-actions{display:flex;gap:12px;margin-top:20px}
+.btn-back{background:transparent;border:1px solid var(--brd);border-radius:8px;padding:12px 20px;color:var(--tx2);font-size:15px;flex-shrink:0}
+.btn-back:hover{border-color:var(--tx2)}
+.btn-primary{background:var(--blu);border:none;border-radius:8px;padding:14px 32px;color:#fff;font-family:var(--hb);font-size:22px;font-weight:700;letter-spacing:1px;text-transform:uppercase;flex:1}
+.btn-primary:hover{background:var(--bld)}
+.btn-ghost{background:transparent;border:1px solid var(--brd);border-radius:4px;padding:5px 14px;color:var(--tx3);font-size:11px}
+.mic-wrap{position:sticky;bottom:16px;display:flex;justify-content:flex-end;pointer-events:none;margin-top:20px;padding-right:4px}
+.mic-wrap.rtl{justify-content:flex-start;padding-right:0;padding-left:4px}
+.mic-btn{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:all;transition:all .2s}
+.mic-btn.idle{background:var(--blu);box-shadow:0 4px 20px rgba(0,0,0,.45)}
+.mic-btn.listening{background:var(--red);box-shadow:0 0 0 10px rgba(240,68,68,.2),0 4px 20px rgba(0,0,0,.45)}
+.mic-btn.translating{background:var(--amb);box-shadow:0 4px 20px rgba(0,0,0,.45)}
+.mic-btn.done{background:var(--grn);box-shadow:0 4px 20px rgba(0,0,0,.45)}
+.mic-icon{font-size:22px}
+.mic-label{font-size:7px;color:#fff;text-align:center;line-height:1.2;max-width:52px}
+.confirm-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 100px);text-align:center;padding:20px}
+.confirm-bigicon{font-size:80px;margin-bottom:20px}
+.confirm-title{font-family:var(--hb);font-size:28px;font-weight:700;color:var(--grn);margin-bottom:16px;max-width:480px}
+.confirm-msg{font-size:17px;color:var(--tx2);max-width:480px;line-height:1.65;margin-bottom:32px}
+.confirm-id-box{background:var(--card);border:2px solid var(--blu);border-radius:12px;padding:18px 48px;margin-bottom:32px}
+.confirm-id-lbl{font-family:var(--hb);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
+.confirm-id-val{font-family:var(--hb);font-size:46px;font-weight:900;letter-spacing:6px;color:var(--tx)}
+.btn-newreg{background:var(--card);border:2px solid var(--brd);border-radius:8px;padding:14px 32px;color:var(--tx);font-family:var(--hb);font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.btn-newreg:hover{border-color:var(--blu)}
+/* ADMIN */
+.admin-wrap{min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.admin-hdr{background:var(--surf);border-bottom:2px solid var(--brd);padding:12px 24px;display:flex;align-items:center;gap:16px}
+.admin-hdr h1{font-family:var(--hb);font-size:17px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tx)}
+.admin-hdr p{font-size:12px;color:var(--tx2);margin-top:2px}
+.admin-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--brd);flex-shrink:0}
+.admin-tab{padding:12px 24px;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--tx2);font-family:var(--hb);font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .15s}
+.admin-tab.active{border-bottom-color:var(--blu);color:var(--tx)}
+.admin-tab.detail-tab{border-bottom-color:var(--amb);color:var(--amb)}
+.admin-body{flex:1;padding:24px;max-width:900px;margin:0 auto;width:100%}
+.admin-sec-title{font-family:var(--hb);font-size:17px;font-weight:700;color:var(--tx2);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.dfield{background:var(--card);border-left:4px solid var(--brd);border-radius:0 4px 4px 0;padding:11px 15px}
+.dfield.big{border-left-color:var(--blu)}
+.dfield.full{grid-column:1/-1}
+.dfield-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx2);font-weight:700;margin-bottom:4px}
+.dfield-val{font-size:15px;font-weight:600;color:var(--tx)}
+.dfield.big .dfield-val{font-family:var(--hb);font-size:28px;font-weight:900;color:var(--blu);letter-spacing:3px}
+.voice-box{background:rgba(245,163,36,.07);border:1px solid var(--amb);border-radius:8px;padding:14px 16px;margin-bottom:20px}
+.voice-box-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--amb);font-weight:700;margin-bottom:6px}
+.voice-box-txt{font-size:14px;color:var(--tx);line-height:1.55}
+.btn-pdf{background:var(--blu);border:none;border-radius:6px;padding:12px 24px;color:#fff;font-family:var(--hb);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+.btn-pdf:hover{background:var(--bld)}
+.search-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:15px;outline:none;margin-bottom:16px}
+.search-input:focus{border-color:var(--blu)}
+.search-input::placeholder{color:var(--tx3)}
+.search-row{background:var(--card);border:1px solid var(--brd);border-radius:6px;padding:12px 16px;display:flex;align-items:center;gap:16px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;color:var(--tx)}
+.search-row:hover{border-color:var(--blu)}
+.search-row-id{font-family:var(--hb);font-size:18px;font-weight:700;color:var(--blu);min-width:110px}
+.search-row-date{font-size:12px;color:var(--tx2);white-space:nowrap}
+.search-row-op{font-size:13px;flex:1}
+.search-row-plates{font-size:12px;font-family:monospace;color:var(--tx2);white-space:nowrap}
+.empty{text-align:center;padding:56px 20px;color:var(--tx3);font-size:15px}
+.detail-back-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.btn-sm-back{background:var(--card);border:1px solid var(--brd);border-radius:4px;padding:7px 14px;color:var(--tx2);font-size:12px}
+.btn-sm-back:hover{border-color:var(--tx2)}
+@media(max-width:520px){.detail-grid{grid-template-columns:1fr}.dfield.full{grid-column:auto}.lang-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const LANG_ORDER=['es','en','fr','tr','ru','it','pt','cs','bg','pl','ro','de','el','nl','ar'];
+const RECOG={es:'es-ES',en:'en-GB',fr:'fr-FR',tr:'tr-TR',ru:'ru-RU',it:'it-IT',pt:'pt-PT',cs:'cs-CZ',bg:'bg-BG',pl:'pl-PL',ro:'ro-RO',de:'de-DE',el:'el-GR',nl:'nl-NL',ar:'ar-SA'};
+const T={
+  es:{flag:'🇪🇸',name:'Español',dir:'ltr',title:'Registro de Llegada',selectLang:'Selecciona tu idioma',selectOp:'Selecciona la operación',originPr:'País de procedencia',destPr:'País de destino',vehicleTitle:'Datos del vehículo',tractor:'Matrícula tractora',trailer:'Matrícula remolque',reference:'Nº Referencia / Expedición',notes:'Observaciones (opcional)',confirm:'CONFIRMAR',back:'Atrás',regOk:'Registro realizado correctamente.',regMsg:'Espere en su vehículo hasta que desde control le llamen para indicarle el número de muelle.',regNum:'Número de registro',newReg:'Nuevo registro',ops:{delivery:'Descarga / Entrega',pickup:'Carga / Recogida',customs:'Gestión Aduana',communication:'Comunicación',incident:'Incidencia'},voiceHint:'Pulsar para hablar',listening:'Escuchando...',translating:'Traduciendo...',voiceDone:'Guardado ✓',required:'Campo obligatorio'},
+  en:{flag:'🇬🇧',name:'English',dir:'ltr',title:'Arrival Registration',selectLang:'Select your language',selectOp:'Select operation',originPr:'Country of origin',destPr:'Destination country',vehicleTitle:'Vehicle data',tractor:'Tractor plate',trailer:'Trailer plate',reference:'Reference / Shipment No.',notes:'Observations (optional)',confirm:'CONFIRM',back:'Back',regOk:'Registration completed.',regMsg:'Please wait in your vehicle until control calls you with the dock number.',regNum:'Registration number',newReg:'New registration',ops:{delivery:'Unloading / Delivery',pickup:'Loading / Pickup',customs:'Customs Management',communication:'Communication',incident:'Incident'},voiceHint:'Press to speak',listening:'Listening...',translating:'Translating...',voiceDone:'Saved ✓',required:'Required field'},
+  fr:{flag:'🇫🇷',name:'Français',dir:'ltr',title:"Enregistrement d'Arrivée",selectLang:'Sélectionnez votre langue',selectOp:"Sélectionnez l'opération",originPr:"Pays d'origine",destPr:'Pays de destination',vehicleTitle:'Données du véhicule',tractor:'Plaque tracteur',trailer:'Plaque remorque',reference:'N° Référence / Expédition',notes:'Observations (facultatif)',confirm:'CONFIRMER',back:'Retour',regOk:'Enregistrement effectué.',regMsg:"Veuillez attendre dans votre véhicule jusqu'à ce que le contrôle vous appelle avec le numéro de quai.",regNum:"Numéro d'enregistrement",newReg:'Nouvel enregistrement',ops:{delivery:'Déchargement / Livraison',pickup:'Chargement / Enlèvement',customs:'Gestion douanière',communication:'Communication',incident:'Incident'},voiceHint:'Appuyez pour parler',listening:'Écoute...',translating:'Traduction...',voiceDone:'Enregistré ✓',required:'Champ obligatoire'},
+  tr:{flag:'🇹🇷',name:'Türkçe',dir:'ltr',title:'Varış Kaydı',selectLang:'Dilinizi seçin',selectOp:'İşlem seçin',originPr:'Çıkış ülkesi',destPr:'Varış ülkesi',vehicleTitle:'Araç bilgileri',tractor:'Çekici plakası',trailer:'Römork plakası',reference:'Referans / Sevkiyat No.',notes:'Gözlemler (isteğe bağlı)',confirm:'ONAYLA',back:'Geri',regOk:'Kayıt tamamlandı.',regMsg:'Kontrol size rıhtım numarasını bildirene kadar aracınızda bekleyin.',regNum:'Kayıt numarası',newReg:'Yeni kayıt',ops:{delivery:'Boşaltma / Teslimat',pickup:'Yükleme / Teslim Alma',customs:'Gümrük Yönetimi',communication:'İletişim',incident:'Olay'},voiceHint:'Konuşmak için basın',listening:'Dinleniyor...',translating:'Çevriliyor...',voiceDone:'Kaydedildi ✓',required:'Zorunlu alan'},
+  ru:{flag:'🇷🇺',name:'Русский',dir:'ltr',title:'Регистрация прибытия',selectLang:'Выберите язык',selectOp:'Выберите операцию',originPr:'Страна отправления',destPr:'Страна назначения',vehicleTitle:'Данные ТС',tractor:'Номер тягача',trailer:'Номер прицепа',reference:'Номер ссылки / отправления',notes:'Примечания (необязательно)',confirm:'ПОДТВЕРДИТЬ',back:'Назад',regOk:'Регистрация выполнена.',regMsg:'Пожалуйста, ждите в ТС, пока контроль не позвонит с номером дока.',regNum:'Номер регистрации',newReg:'Новая регистрация',ops:{delivery:'Разгрузка / Доставка',pickup:'Погрузка / Получение',customs:'Таможня',communication:'Связь',incident:'Инцидент'},voiceHint:'Нажмите для речи',listening:'Слушаю...',translating:'Перевод...',voiceDone:'Сохранено ✓',required:'Обязательное поле'},
+  it:{flag:'🇮🇹',name:'Italiano',dir:'ltr',title:'Registrazione Arrivo',selectLang:'Seleziona la tua lingua',selectOp:"Seleziona l'operazione",originPr:'Paese di provenienza',destPr:'Paese di destinazione',vehicleTitle:'Dati del veicolo',tractor:'Targa trattore',trailer:'Targa rimorchio',reference:'N° riferimento / spedizione',notes:'Osservazioni (opzionale)',confirm:'CONFERMA',back:'Indietro',regOk:'Registrazione completata.',regMsg:'Attendere nel veicolo fino a quando il controllo la chiamerà con il numero del molo.',regNum:'Numero di registrazione',newReg:'Nuova registrazione',ops:{delivery:'Scarico / Consegna',pickup:'Carico / Ritiro',customs:'Gestione Dogana',communication:'Comunicazione',incident:'Incidente'},voiceHint:'Premi per parlare',listening:'In ascolto...',translating:'Traduzione...',voiceDone:'Salvato ✓',required:'Campo obbligatorio'},
+  pt:{flag:'🇵🇹',name:'Português',dir:'ltr',title:'Registo de Chegada',selectLang:'Selecione o seu idioma',selectOp:'Selecione a operação',originPr:'País de origem',destPr:'País de destino',vehicleTitle:'Dados do veículo',tractor:'Matrícula do trator',trailer:'Matrícula do reboque',reference:'Nº Referência / Expedição',notes:'Observações (opcional)',confirm:'CONFIRMAR',back:'Voltar',regOk:'Registo realizado com sucesso.',regMsg:'Por favor, aguarde no seu veículo até que o controlo o contacte com o número da doca.',regNum:'Número de registo',newReg:'Novo registo',ops:{delivery:'Descarga / Entrega',pickup:'Carga / Recolha',customs:'Gestão Aduaneira',communication:'Comunicação',incident:'Incidente'},voiceHint:'Pressione para falar',listening:'A ouvir...',translating:'A traduzir...',voiceDone:'Guardado ✓',required:'Campo obrigatório'},
+  cs:{flag:'🇨🇿',name:'Čeština',dir:'ltr',title:'Registrace příjezdu',selectLang:'Vyberte svůj jazyk',selectOp:'Vyberte operaci',originPr:'Země původu',destPr:'Země určení',vehicleTitle:'Údaje o vozidle',tractor:'SPZ tahače',trailer:'SPZ návěsu',reference:'Č. reference / zásilky',notes:'Poznámky (volitelné)',confirm:'POTVRDIT',back:'Zpět',regOk:'Registrace dokončena.',regMsg:'Čekejte prosím ve vozidle, dokud vás dispečink nezavolá s číslem rampy.',regNum:'Číslo registrace',newReg:'Nová registrace',ops:{delivery:'Vykládka / Doručení',pickup:'Nakládka / Vyzvednutí',customs:'Celní správa',communication:'Komunikace',incident:'Incident'},voiceHint:'Stiskněte pro mluvení',listening:'Poslouchám...',translating:'Překládám...',voiceDone:'Uloženo ✓',required:'Povinné pole'},
+  bg:{flag:'🇧🇬',name:'Български',dir:'ltr',title:'Регистрация на пристигане',selectLang:'Изберете вашия език',selectOp:'Изберете операция',originPr:'Страна на произход',destPr:'Страна на местоназначение',vehicleTitle:'Данни за ПС',tractor:'Рег. № влекач',trailer:'Рег. № ремарке',reference:'Реф. / Експедиционен №',notes:'Забележки (по избор)',confirm:'ПОТВЪРДИ',back:'Назад',regOk:'Регистрацията е завършена.',regMsg:'Моля, изчакайте в ПС, докато контролът ви се обади с номера на дока.',regNum:'Регистрационен номер',newReg:'Нова регистрация',ops:{delivery:'Разтоварване / Доставка',pickup:'Натоварване / Вземане',customs:'Митница',communication:'Комуникация',incident:'Инцидент'},voiceHint:'Натиснете за говорене',listening:'Слушам...',translating:'Превеждам...',voiceDone:'Записано ✓',required:'Задължително поле'},
+  pl:{flag:'🇵🇱',name:'Polski',dir:'ltr',title:'Rejestracja przyjazdu',selectLang:'Wybierz swój język',selectOp:'Wybierz operację',originPr:'Kraj pochodzenia',destPr:'Kraj przeznaczenia',vehicleTitle:'Dane pojazdu',tractor:'Nr rej. ciągnika',trailer:'Nr rej. naczepy',reference:'Nr referencyjny / ekspedycji',notes:'Uwagi (opcjonalne)',confirm:'POTWIERDŹ',back:'Wstecz',regOk:'Rejestracja zakończona.',regMsg:'Proszę czekać w pojeździe, aż kontrola zadzwoni z numerem rampy.',regNum:'Numer rejestracji',newReg:'Nowa rejestracja',ops:{delivery:'Rozładunek / Dostawa',pickup:'Załadunek / Odbiór',customs:'Zarządzanie celne',communication:'Komunikacja',incident:'Incydent'},voiceHint:'Naciśnij, aby mówić',listening:'Słucham...',translating:'Tłumaczę...',voiceDone:'Zapisano ✓',required:'Pole wymagane'},
+  ro:{flag:'🇷🇴',name:'Română',dir:'ltr',title:'Înregistrare Sosire',selectLang:'Selectați limba',selectOp:'Selectați operația',originPr:'Țara de origine',destPr:'Țara de destinație',vehicleTitle:'Date vehicul',tractor:'Nr. înmatriculare tractor',trailer:'Nr. înmatriculare remorcă',reference:'Nr. referință / expediere',notes:'Observații (opțional)',confirm:'CONFIRMĂ',back:'Înapoi',regOk:'Înregistrare finalizată.',regMsg:'Vă rugăm să așteptați în vehicul până când controlul vă va suna cu numărul dockului.',regNum:'Număr de înregistrare',newReg:'Înregistrare nouă',ops:{delivery:'Descărcare / Livrare',pickup:'Încărcare / Ridicare',customs:'Gestiune vamală',communication:'Comunicare',incident:'Incident'},voiceHint:'Apăsați pentru a vorbi',listening:'Ascult...',translating:'Traduc...',voiceDone:'Salvat ✓',required:'Câmp obligatoriu'},
+  de:{flag:'🇩🇪',name:'Deutsch',dir:'ltr',title:'Ankunftsregistrierung',selectLang:'Sprache wählen',selectOp:'Vorgang wählen',originPr:'Herkunftsland',destPr:'Zielland',vehicleTitle:'Fahrzeugdaten',tractor:'Kennzeichen Zugmaschine',trailer:'Kennzeichen Anhänger',reference:'Referenz- / Sendungsnr.',notes:'Bemerkungen (optional)',confirm:'BESTÄTIGEN',back:'Zurück',regOk:'Anmeldung abgeschlossen.',regMsg:'Bitte warten Sie in Ihrem Fahrzeug, bis die Zentrale Sie mit der Docknummer anruft.',regNum:'Registrierungsnummer',newReg:'Neue Registrierung',ops:{delivery:'Entladung / Lieferung',pickup:'Beladung / Abholung',customs:'Zollabwicklung',communication:'Kommunikation',incident:'Zwischenfall'},voiceHint:'Drücken zum Sprechen',listening:'Höre zu...',translating:'Übersetze...',voiceDone:'Gespeichert ✓',required:'Pflichtfeld'},
+  el:{flag:'🇬🇷',name:'Ελληνικά',dir:'ltr',title:'Εγγραφή Άφιξης',selectLang:'Επιλέξτε γλώσσα',selectOp:'Επιλέξτε λειτουργία',originPr:'Χώρα προέλευσης',destPr:'Χώρα προορισμού',vehicleTitle:'Στοιχεία οχήματος',tractor:'Πινακίδα ελκυστήρα',trailer:'Πινακίδα ρυμουλκούμενου',reference:'Αρ. αναφοράς / αποστολής',notes:'Παρατηρήσεις (προαιρετικό)',confirm:'ΕΠΙΒΕΒΑΙΩΣΗ',back:'Πίσω',regOk:'Η εγγραφή ολοκληρώθηκε.',regMsg:'Παρακαλώ περιμένετε στο όχημά σας μέχρι ο έλεγχος να σας καλέσει με τον αριθμό αποβάθρας.',regNum:'Αριθμός εγγραφής',newReg:'Νέα εγγραφή',ops:{delivery:'Εκφόρτωση / Παράδοση',pickup:'Φόρτωση / Παραλαβή',customs:'Τελωνειακή Διαχείριση',communication:'Επικοινωνία',incident:'Συμβάν'},voiceHint:'Πατήστε για να μιλήσετε',listening:'Ακούω...',translating:'Μεταφράζω...',voiceDone:'Αποθηκεύτηκε ✓',required:'Υποχρεωτικό πεδίο'},
+  nl:{flag:'🇳🇱',name:'Nederlands',dir:'ltr',title:'Aankomstregistratie',selectLang:'Kies uw taal',selectOp:'Kies de handeling',originPr:'Land van herkomst',destPr:'Land van bestemming',vehicleTitle:'Voertuiggegevens',tractor:'Kenteken trekker',trailer:'Kenteken oplegger',reference:'Referentie- / zendingsnr.',notes:'Opmerkingen (optioneel)',confirm:'BEVESTIGEN',back:'Terug',regOk:'Registratie voltooid.',regMsg:'Wacht in uw voertuig totdat de controle u belt met het docknummer.',regNum:'Registratienummer',newReg:'Nieuwe registratie',ops:{delivery:'Lossen / Levering',pickup:'Laden / Afhalen',customs:'Douanebeheer',communication:'Communicatie',incident:'Incident'},voiceHint:'Druk om te spreken',listening:'Luisteren...',translating:'Vertalen...',voiceDone:'Opgeslagen ✓',required:'Verplicht veld'},
+  ar:{flag:'🇸🇦',name:'العربية',dir:'rtl',title:'تسجيل الوصول',selectLang:'اختر لغتك',selectOp:'اختر العملية',originPr:'بلد المنشأ',destPr:'بلد المقصد',vehicleTitle:'بيانات المركبة',tractor:'لوحة الجرار',trailer:'لوحة المقطورة',reference:'رقم المرجع / الشحنة',notes:'ملاحظات (اختياري)',confirm:'تأكيد',back:'رجوع',regOk:'تم التسجيل بنجاح.',regMsg:'يرجى الانتظار في مركبتك حتى يتصل بك مركز التحكم لإعلامك برقم الرصيف.',regNum:'رقم التسجيل',newReg:'تسجيل جديد',ops:{delivery:'تفريغ / تسليم',pickup:'تحميل / استلام',customs:'إدارة الجمارك',communication:'تواصل',incident:'حادثة'},voiceHint:'اضغط للتحدث',listening:'جاري الاستماع...',translating:'جاري الترجمة...',voiceDone:'تم الحفظ ✓',required:'حقل مطلوب'},
+};
+const COUNTRIES=[
+  {id:'ES',es:'España',en:'Spain',fr:'Espagne',tr:'İspanya',ru:'Испания',it:'Spagna',pt:'Espanha',cs:'Španělsko',bg:'Испания',pl:'Hiszpania',ro:'Spania',de:'Spanien',el:'Ισπανία',nl:'Spanje',ar:'إسبانيا'},
+  {id:'PT',es:'Portugal',en:'Portugal',fr:'Portugal',tr:'Portekiz',ru:'Португалия',it:'Portogallo',pt:'Portugal',cs:'Portugalsko',bg:'Португалия',pl:'Portugalia',ro:'Portugalia',de:'Portugal',el:'Πορτογαλία',nl:'Portugal',ar:'البرتغال'},
+  {id:'FR',es:'Francia',en:'France',fr:'France',tr:'Fransa',ru:'Франция',it:'Francia',pt:'França',cs:'Francie',bg:'Франция',pl:'Francja',ro:'Franța',de:'Frankreich',el:'Γαλλία',nl:'Frankrijk',ar:'فرنسا'},
+  {id:'IT',es:'Italia',en:'Italy',fr:'Italie',tr:'İtalya',ru:'Италия',it:'Italia',pt:'Itália',cs:'Itálie',bg:'Италия',pl:'Włochy',ro:'Italia',de:'Italien',el:'Ιταλία',nl:'Italië',ar:'إيطاليا'},
+  {id:'DE',es:'Alemania',en:'Germany',fr:'Allemagne',tr:'Almanya',ru:'Германия',it:'Germania',pt:'Alemanha',cs:'Německo',bg:'Германия',pl:'Niemcy',ro:'Germania',de:'Deutschland',el:'Γερμανία',nl:'Duitsland',ar:'ألمانيا'},
+  {id:'NL',es:'Países Bajos',en:'Netherlands',fr:'Pays-Bas',tr:'Hollanda',ru:'Нидерланды',it:'Paesi Bassi',pt:'Países Baixos',cs:'Nizozemsko',bg:'Нидерландия',pl:'Holandia',ro:'Olanda',de:'Niederlande',el:'Ολλανδία',nl:'Nederland',ar:'هولندا'},
+  {id:'BE',es:'Bélgica',en:'Belgium',fr:'Belgique',tr:'Belçika',ru:'Бельгия',it:'Belgio',pt:'Bélgica',cs:'Belgie',bg:'Белгия',pl:'Belgia',ro:'Belgia',de:'Belgien',el:'Βέλγιο',nl:'België',ar:'بلجيكا'},
+  {id:'PL',es:'Polonia',en:'Poland',fr:'Pologne',tr:'Polonya',ru:'Польша',it:'Polonia',pt:'Polónia',cs:'Polsko',bg:'Полша',pl:'Polska',ro:'Polonia',de:'Polen',el:'Πολωνία',nl:'Polen',ar:'بولندا'},
+  {id:'CZ',es:'Rep. Checa',en:'Czech Rep.',fr:'Rép. Tchèque',tr:'Çekya',ru:'Чехия',it:'Rep. Ceca',pt:'Rep. Checa',cs:'Česká republika',bg:'Чехия',pl:'Czechy',ro:'Cehia',de:'Tschechien',el:'Τσεχία',nl:'Tsjechië',ar:'جمهورية التشيك'},
+  {id:'SK',es:'Eslovaquia',en:'Slovakia',fr:'Slovaquie',tr:'Slovakya',ru:'Словакия',it:'Slovacchia',pt:'Eslováquia',cs:'Slovensko',bg:'Словакия',pl:'Słowacja',ro:'Slovacia',de:'Slowakei',el:'Σλοβακία',nl:'Slowakije',ar:'سلوفاكيا'},
+  {id:'AT',es:'Austria',en:'Austria',fr:'Autriche',tr:'Avusturya',ru:'Австрия',it:'Austria',pt:'Áustria',cs:'Rakousko',bg:'Австрия',pl:'Austria',ro:'Austria',de:'Österreich',el:'Αυστρία',nl:'Oostenrijk',ar:'النمسا'},
+  {id:'HU',es:'Hungría',en:'Hungary',fr:'Hongrie',tr:'Macaristan',ru:'Венгрия',it:'Ungheria',pt:'Hungria',cs:'Maďarsko',bg:'Унгария',pl:'Węgry',ro:'Ungaria',de:'Ungarn',el:'Ουγγαρία',nl:'Hongarije',ar:'المجر'},
+  {id:'RO',es:'Rumanía',en:'Romania',fr:'Roumanie',tr:'Romanya',ru:'Румыния',it:'Romania',pt:'Roménia',cs:'Rumunsko',bg:'Румъния',pl:'Rumunia',ro:'România',de:'Rumänien',el:'Ρουμανία',nl:'Roemenië',ar:'رومانيا'},
+  {id:'BG',es:'Bulgaria',en:'Bulgaria',fr:'Bulgarie',tr:'Bulgaristan',ru:'Болгария',it:'Bulgaria',pt:'Bulgária',cs:'Bulharsko',bg:'България',pl:'Bułgaria',ro:'Bulgaria',de:'Bulgarien',el:'Βουλγαρία',nl:'Bulgarije',ar:'بلغاريا'},
+  {id:'GR',es:'Grecia',en:'Greece',fr:'Grèce',tr:'Yunanistan',ru:'Греция',it:'Grecia',pt:'Grécia',cs:'Řecko',bg:'Гърция',pl:'Grecja',ro:'Grecia',de:'Griechenland',el:'Ελλάδα',nl:'Griekenland',ar:'اليونان'},
+  {id:'TR',es:'Turquía',en:'Turkey',fr:'Turquie',tr:'Türkiye',ru:'Турция',it:'Turchia',pt:'Turquia',cs:'Turecko',bg:'Турция',pl:'Turcja',ro:'Turcia',de:'Türkei',el:'Τουρκία',nl:'Turkije',ar:'تركيا'},
+  {id:'RU',es:'Rusia',en:'Russia',fr:'Russie',tr:'Rusya',ru:'Россия',it:'Russia',pt:'Rússia',cs:'Rusko',bg:'Русия',pl:'Rosja',ro:'Rusia',de:'Russland',el:'Ρωσία',nl:'Rusland',ar:'روسيا'},
+  {id:'UA',es:'Ucrania',en:'Ukraine',fr:'Ukraine',tr:'Ukrayna',ru:'Украина',it:'Ucraina',pt:'Ucrânia',cs:'Ukrajina',bg:'Украйна',pl:'Ukraina',ro:'Ucraina',de:'Ukraine',el:'Ουκρανία',nl:'Oekraïne',ar:'أوكرانيا'},
+  {id:'GB',es:'Reino Unido',en:'United Kingdom',fr:'Royaume-Uni',tr:'Birleşik Krallık',ru:'Великобритания',it:'Regno Unito',pt:'Reino Unido',cs:'Spojené království',bg:'Великобритания',pl:'Wielka Brytania',ro:'Regatul Unit',de:'Ver. Königreich',el:'Ηνωμένο Βασίλειο',nl:'Ver. Koninkrijk',ar:'المملكة المتحدة'},
+  {id:'CH',es:'Suiza',en:'Switzerland',fr:'Suisse',tr:'İsviçre',ru:'Швейцария',it:'Svizzera',pt:'Suíça',cs:'Švýcarsko',bg:'Швейцария',pl:'Szwajcaria',ro:'Elveția',de:'Schweiz',el:'Ελβετία',nl:'Zwitserland',ar:'سويسرا'},
+  {id:'SE',es:'Suecia',en:'Sweden',fr:'Suède',tr:'İsveç',ru:'Швеция',it:'Svezia',pt:'Suécia',cs:'Švédsko',bg:'Швеция',pl:'Szwecja',ro:'Suedia',de:'Schweden',el:'Σουηδία',nl:'Zweden',ar:'السويد'},
+  {id:'MA',es:'Marruecos',en:'Morocco',fr:'Maroc',tr:'Fas',ru:'Марокко',it:'Marocco',pt:'Marrocos',cs:'Maroko',bg:'Мароко',pl:'Maroko',ro:'Maroc',de:'Marokko',el:'Μαρόκο',nl:'Marokko',ar:'المغرب'},
+  {id:'CN',es:'China',en:'China',fr:'Chine',tr:'Çin',ru:'Китай',it:'Cina',pt:'China',cs:'Čína',bg:'Китай',pl:'Chiny',ro:'China',de:'China',el:'Κίνα',nl:'China',ar:'الصين'},
+  {id:'HR',es:'Croacia',en:'Croatia',fr:'Croatie',tr:'Hırvatistan',ru:'Хорватия',it:'Croazia',pt:'Croácia',cs:'Chorvatsko',bg:'Хърватия',pl:'Chorwacja',ro:'Croația',de:'Kroatien',el:'Κροατία',nl:'Kroatië',ar:'كرواتيا'},
+  {id:'RS',es:'Serbia',en:'Serbia',fr:'Serbie',tr:'Sırbistan',ru:'Сербия',it:'Serbia',pt:'Sérvia',cs:'Srbsko',bg:'Сърбия',pl:'Serbia',ro:'Serbia',de:'Serbien',el:'Σερβία',nl:'Servië',ar:'صربيا'},
+];
+const OP_ORDER=['delivery','pickup','customs','communication','incident'];
+const OP_ICONS={delivery:'📦',pickup:'🏗️',customs:'🛃',communication:'💬',incident:'⚠️'};
+const OP_CTRY={delivery:'origen',pickup:'destino',customs:'origen',communication:null,incident:null};
+const OP_ES={delivery:'Descarga / Entrega',pickup:'Carga / Recogida',customs:'Gestión Aduana',communication:'Comunicación',incident:'Incidencia'};
+
+/* ── STATE ── */
+let S={
+  mode:'kiosk',screen:'language',adminTab:'last',
+  lang:'es',op:null,country:null,
+  veh:{tractor:'',trailer:'',reference:'',notes:''},
+  errors:{},regs:[],pendingVoice:'',voiceState:'idle',
+  searchQ:'',detailReg:null
+};
+let regN=0;
+function nextId(){return 'CAM-'+String(++regN).padStart(5,'0');}
+function fmtDate(ts){return new Date(ts).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function tt(){return T[S.lang];}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ── VOICE ── */
+let recog=null;
+async function translateToSpanish(text){
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Translate the following text to Spanish. Return ONLY the translation, nothing else:\n'+text}]})});
+    const d=await r.json();
+    return d.content?.[0]?.text?.trim()||text;
+  }catch(e){return text;}
+}
+function handleVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Reconocimiento de voz no disponible en este navegador.');return;}
+  if(S.voiceState==='listening'){recog&&recog.stop();return;}
+  recog=new SR();
+  recog.lang=RECOG[S.lang]||'es-ES';
+  recog.continuous=false;recog.interimResults=false;
+  recog.onstart=()=>{S.voiceState='listening';render();};
+  recog.onerror=()=>{S.voiceState='idle';render();};
+  recog.onend=()=>{if(S.voiceState==='listening'){S.voiceState='idle';render();}};
+  recog.onresult=async(e)=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join(' ');
+    S.voiceState='translating';render();
+    let translated=transcript;
+    if(S.lang!=='es'){translated=await translateToSpanish(transcript);}
+    S.pendingVoice=S.pendingVoice?S.pendingVoice+' | '+translated:translated;
+    if(S.screen==='confirmation'&&S.regs.length>0){
+      const last=S.regs[S.regs.length-1];
+      last.voiceText=last.voiceText?last.voiceText+' | '+translated:translated;
+    }
+    S.voiceState='done';render();
+    setTimeout(()=>{S.voiceState='idle';render();},2500);
+  };
+  recog.start();
+}
+
+/* ── ACTIONS ── */
+function goLang(lk){S.lang=lk;S.screen='operation';render();}
+function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
+function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
+function goBack(){
+  if(S.screen==='operation')S.screen='language';
+  else if(S.screen==='country')S.screen='operation';
+  else if(S.screen==='vehicle')S.screen=OP_CTRY[S.op]?'country':'operation';
+  render();
+}
+function submitVehicle(){
+  const v=S.veh;const e={};
+  if(!v.tractor.trim())e.tractor=true;
+  if(!v.trailer.trim())e.trailer=true;
+  if(!v.reference.trim())e.reference=true;
+  if(Object.keys(e).length){S.errors=e;render();return;}
+  const id=nextId();
+  const ctry=S.country?COUNTRIES.find(c=>c.id===S.country):null;
+  S.regs.push({id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice});
+  S.screen='confirmation';render();
+}
+function resetKiosk(){S.screen='language';S.lang='es';S.op=null;S.country=null;S.veh={tractor:'',trailer:'',reference:'',notes:''};S.errors={};S.pendingVoice='';S.voiceState='idle';render();}
+function setField(k,v){S.veh[k]=v;if(S.errors[k]){S.errors[k]=false;}}
+function goAdmin(){S.mode='admin';S.adminTab='last';S.detailReg=null;S.searchQ='';render();}
+function goKiosk(){S.mode='kiosk';render();}
+function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;render();}
+function setDetail(reg){S.detailReg=reg;render();}
+function clearDetail(){S.detailReg=null;render();}
+function doSearch(v){S.searchQ=v;render();}
+
+/* ── PDF ── */
+function printPDF(regId){
+  const reg=S.regs.find(r=>r.id===regId);
+  if(!reg)return;
+  const w=window.open('','_blank');
+  if(!w){alert('Permite ventanas emergentes para generar el PDF.');return;}
+  w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>'+reg.id+'</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:40px;color:#0d1b2a;line-height:1.4}.hd{text-align:center;border-bottom:3px solid #0d2a4a;padding-bottom:16px;margin-bottom:24px}.hd h1{font-size:18px;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a}.hd p{font-size:11px;color:#666;margin-top:6px}.rn{text-align:center;font-size:36px;font-weight:bold;color:#1a6eff;letter-spacing:5px;margin:16px 0 24px;font-family:monospace}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}.f{background:#f0f6ff;border-left:4px solid #1a6eff;padding:10px 14px;border-radius:0 4px 4px 0}.f.full{grid-column:1/-1}.lb{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5577aa;font-weight:bold;margin-bottom:3px}.vl{font-size:16px;font-weight:bold;color:#0d1b2a}.vb{background:#fff8e1;border:1px solid #f5a623;padding:12px 14px;border-radius:4px;margin-bottom:20px}.vb .lb{color:#c67d00}.vb .vl{font-size:13px;font-weight:normal;line-height:1.5}.ft{text-align:center;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:12px;margin-top:20px}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<div class="hd"><h1>Registro de Llegada de Camión</h1><p>Sistema de control de acceso · Documento generado automáticamente</p></div>');
+  w.document.write('<div class="rn">'+reg.id+'</div>');
+  w.document.write('<div class="grid">');
+  w.document.write('<div class="f full"><div class="lb">Fecha y hora de registro</div><div class="vl">'+fmtDate(reg.timestamp)+'</div></div>');
+  w.document.write('<div class="f"><div class="lb">Operación</div><div class="vl">'+reg.operationLabel+'</div></div>');
+  w.document.write('<div class="f"><div class="lb">País de '+(reg.countryType||'—')+'</div><div class="vl">'+(reg.country||'—')+'</div></div>');
+  w.document.write('<div class="f"><div class="lb">Matrícula tractora</div><div class="vl">'+reg.tractor+'</div></div>');
+  w.document.write('<div class="f"><div class="lb">Matrícula remolque</div><div class="vl">'+reg.trailer+'</div></div>');
+  w.document.write('<div class="f full"><div class="lb">Referencia / Expedición</div><div class="vl">'+(reg.reference||'—')+'</div></div>');
+  if(reg.notes)w.document.write('<div class="f full"><div class="lb">Observaciones</div><div class="vl">'+reg.notes+'</div></div>');
+  w.document.write('</div>');
+  if(reg.voiceText)w.document.write('<div class="vb"><div class="lb">Mensaje de voz (traducido al español)</div><div class="vl">'+reg.voiceText+'</div></div>');
+  w.document.write('<div class="ft">Documento válido únicamente con número de registro · Siempre en español</div></body></html>');
+  w.document.close();
+  setTimeout(()=>{w.focus();w.print();},400);
+}
+
+/* ── MIC HTML ── */
+function micHtml(){
+  const t=tt();const vs=S.voiceState;
+  const colors={idle:'#1a6eff',listening:'#f04444',translating:'#f5a324',done:'#16c96a'};
+  const icons={idle:'🎤',listening:'⏹',translating:'⌛',done:'✓'};
+  const labels={idle:'',listening:t.listening,translating:t.translating,done:t.voiceDone};
+  const shadow=vs==='listening'?'0 0 0 10px rgba(240,68,68,.2),0 4px 20px rgba(0,0,0,.45)':'0 4px 20px rgba(0,0,0,.45)';
+  const isRTL=t.dir==='rtl';
+  return `<div class="mic-wrap${isRTL?' rtl':''}"><button class="mic-btn ${vs}" onclick="handleVoice()" title="${esc(t.voiceHint)}" style="background:${colors[vs]||colors.idle};box-shadow:${shadow}"><span class="mic-icon">${icons[vs]||'🎤'}</span>${labels[vs]?`<span class="mic-label">${esc(labels[vs])}</span>`:''}</button></div>`;
+}
+
+/* ── REG DETAIL HTML ── */
+function regDetailHtml(reg){
+  const fields=[
+    {lb:'Nº de registro',vl:reg.id,big:true,full:false},
+    {lb:'Fecha y hora de registro',vl:fmtDate(reg.timestamp),big:false,full:false},
+    {lb:'Operación',vl:reg.operationLabel,big:false,full:false},
+    {lb:'País de '+(reg.countryType||'—'),vl:reg.country||'—',big:false,full:false},
+    {lb:'Matrícula tractora',vl:reg.tractor,big:false,full:false},
+    {lb:'Matrícula remolque',vl:reg.trailer,big:false,full:false},
+    {lb:'Referencia / Expedición',vl:reg.reference||'—',big:false,full:true},
+    ...(reg.notes?[{lb:'Observaciones',vl:reg.notes,big:false,full:true}]:[]),
+  ];
+  const grid=fields.map(f=>`<div class="dfield${f.big?' big':''}${f.full?' full':''}"><div class="dfield-lbl">${esc(f.lb)}</div><div class="dfield-val">${esc(f.vl)}</div></div>`).join('');
+  const voice=reg.voiceText?`<div class="voice-box"><div class="voice-box-lbl">Mensaje de voz (traducido al español)</div><div class="voice-box-txt">${esc(reg.voiceText)}</div></div>`:'';
+  return `<div class="detail-grid">${grid}</div>${voice}<button class="btn-pdf" onclick="printPDF('${esc(reg.id)}')">📄 EXPORTAR PDF</button>`;
+}
+
+/* ── RENDER ── */
+function render(){
+  const app=document.getElementById('app');
+  if(!app)return;
+  const t=tt();
+  const dir=t.dir;
+
+  /* ── ADMIN ── */
+  if(S.mode==='admin'){
+    const lastReg=S.regs.length?S.regs[S.regs.length-1]:null;
+    const sres=S.searchQ.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(S.searchQ.toLowerCase())||r.tractor.toLowerCase().includes(S.searchQ.toLowerCase())||r.trailer.toLowerCase().includes(S.searchQ.toLowerCase())):[];
+    let body='';
+    if(S.detailReg){
+      body=`<div class="detail-back-row"><button class="btn-sm-back" onclick="clearDetail()">← Volver</button><span class="admin-sec-title" style="margin:0">DETALLE: ${esc(S.detailReg.id)}</span></div>${regDetailHtml(S.detailReg)}`;
+    } else if(S.adminTab==='last'){
+      body=`<div class="admin-sec-title">ÚLTIMO REGISTRO</div>`+(lastReg?regDetailHtml(lastReg):'<div class="empty">No hay registros todavía.</div>');
+    } else {
+      const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer)}</span></button>`).join('');
+      const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
+      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)">${noRes}${rows}`;
+    }
+    app.innerHTML=`<div class="admin-wrap"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>Control de Llegada — Administración</h1><p>Panel de gestión de registros</p></div><div style="margin-left:auto"><button class="btn-sm-back" onclick="goKiosk()">← Kiosco</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📋 ÚLTIMO REGISTRO</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
+    return;
+  }
+
+  /* ── KIOSK ── */
+  let content='';
+
+  if(S.screen==='language'){
+    const btns=LANG_ORDER.map(lk=>`<button class="btn-lang" onclick="goLang('${lk}')"><span class="flag">${T[lk].flag}</span><span class="lname">${esc(T[lk].name)}</span></button>`).join('');
+    content=`<p style="text-align:center;color:var(--tx2);margin-bottom:18px;font-size:13px">Select your language / Selecciona tu idioma</p><div class="lang-grid">${btns}</div><div style="text-align:center;margin-top:20px"><button class="btn-ghost" onclick="goAdmin()">⚙ Administración</button></div>${micHtml()}`;
+    app.innerHTML=`<div class="kiosk-wrap"><div class="kiosk-hdr"><span class="kiosk-hdr-icon">🚛</span><span class="kiosk-hdr-title">Registro de Llegada / Truck Check-in</span></div><div class="kiosk-body">${content}</div></div>`;
+    return;
+  }
+
+  if(S.screen==='operation'){
+    const btns=OP_ORDER.map(opKey=>`<button class="btn-op" onclick="goOp('${opKey}')"><span class="icon">${OP_ICONS[opKey]}</span><span>${esc(t.ops[opKey])}</span></button>`).join('');
+    content=`<div class="op-list">${btns}</div><div style="text-align:center;margin-top:20px"><button class="btn-back" onclick="goBack()">← ${esc(t.back)}</button></div>${micHtml()}`;
+  }
+
+  if(S.screen==='country'){
+    const prompt=OP_CTRY[S.op]==='origen'?t.originPr:t.destPr;
+    const btns=COUNTRIES.map(c=>`<button class="btn-country" onclick="goCountry('${c.id}')">${esc(c[S.lang]||c.es)}</button>`).join('');
+    content=`<div class="country-grid">${btns}</div><div style="text-align:center;margin-top:20px"><button class="btn-back" onclick="goBack()">← ${esc(t.back)}</button></div>${micHtml()}`;
+    app.innerHTML=`<div class="kiosk-wrap" dir="${dir}"><div class="kiosk-hdr"><span class="kiosk-hdr-icon">🚛</span><span class="kiosk-hdr-title">${esc(t.title)}</span></div><div class="kiosk-body"><div class="screen-title">${esc(prompt)}</div>${content}</div></div>`;
+    return;
+  }
+
+  if(S.screen==='vehicle'){
+    const fields=[
+      {k:'tractor',lbl:t.tractor,req:true,multi:false},
+      {k:'trailer',lbl:t.trailer,req:true,multi:false},
+      {k:'reference',lbl:t.reference,req:true,multi:false},
+      {k:'notes',lbl:t.notes,req:false,multi:true},
+    ];
+    const fHtml=fields.map(f=>{
+      const hasErr=S.errors[f.k];
+      const inp=f.multi
+        ?`<textarea class="field-input${hasErr?' err':''}" rows="3" onchange="setField('${f.k}',this.value)" oninput="setField('${f.k}',this.value)">${esc(S.veh[f.k])}</textarea>`
+        :`<input type="text" class="field-input${hasErr?' err':''}" value="${esc(S.veh[f.k])}" onchange="setField('${f.k}',this.value.toUpperCase());this.value=this.value.toUpperCase()" oninput="setField('${f.k}',this.value.toUpperCase());this.value=this.value.toUpperCase()">`;
+      return `<div class="form-group"><label class="field-label${hasErr?' err':''}">${esc(f.lbl)}${f.req?'<span style="color:var(--red)"> *</span>':''}</label>${inp}${hasErr?`<span class="field-err">${esc(t.required)}</span>`:''}</div>`;
+    }).join('');
+    content=`<div class="form-wrap">${fHtml}<div class="form-actions"><button class="btn-back" onclick="goBack()">← ${esc(t.back)}</button><button class="btn-primary" onclick="submitVehicle()">${esc(t.confirm)}</button></div></div>${micHtml()}`;
+  }
+
+  if(S.screen==='confirmation'){
+    const lastReg=S.regs.length?S.regs[S.regs.length-1]:null;
+    content=`<div class="confirm-center"><div class="confirm-bigicon">✅</div><h2 class="confirm-title">${esc(t.regOk)}</h2><p class="confirm-msg">${esc(t.regMsg)}</p>${lastReg?`<div class="confirm-id-box"><p class="confirm-id-lbl">${esc(t.regNum)}</p><p class="confirm-id-val">${esc(lastReg.id)}</p></div>`:''}<button class="btn-newreg" onclick="resetKiosk()">${esc(t.newReg)}</button></div>${micHtml()}`;
+  }
+
+  const title=S.screen==='operation'?t.selectOp:S.screen==='vehicle'?t.vehicleTitle:'';
+  app.innerHTML=`<div class="kiosk-wrap" dir="${dir}"><div class="kiosk-hdr"><span class="kiosk-hdr-icon">🚛</span><span class="kiosk-hdr-title">${esc(t.title)}</span></div><div class="kiosk-body">${title?`<div class="screen-title">${esc(title)}</div>`:''}${content}</div></div>`;
+}
+
+render();
+</script>
+</body>
+</html>
