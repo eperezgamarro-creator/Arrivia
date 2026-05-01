@@ -288,6 +288,18 @@ function pinPress(d){
   } else render();
 }
 function pinDel(){if(S.pinInput.length){S.pinInput=S.pinInput.slice(0,-1);render();}}
+function changePin(){
+  const current=prompt('PIN actual:');
+  if(current===null)return;
+  if(current!==getPin()){alert('PIN incorrecto.');return;}
+  const n1=prompt('Nuevo PIN (4 dígitos):');
+  if(n1===null)return;
+  if(!/^\d{4}$/.test(n1)){alert('El PIN debe tener exactamente 4 dígitos.');return;}
+  const n2=prompt('Repite el nuevo PIN:');
+  if(n2!==n1){alert('Los PINs no coinciden.');return;}
+  localStorage.setItem('arrivia_pin',n1);
+  alert('✅ PIN cambiado correctamente.');
+}
 
 /* ── COUNTDOWN ── */
 function startCountdown(){
@@ -622,7 +634,7 @@ function render(){
       const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
       body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)">${noRes}${rows}`;
     }
-    app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
+    app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="changePin()">🔑 Cambiar PIN</button><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
     return;
   }
 
