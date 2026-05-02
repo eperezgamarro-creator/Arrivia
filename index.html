@@ -184,7 +184,7 @@ textarea.field-input{resize:none;min-height:90px}
 .admin-actions-row{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
 </style>
 </head>
-<body dir="ltr">
+<body>
 <div id="app"></div>
 <div class="watermark">ARRIVIA · Proyecto y diseño: Eduardo Perez Gamarro</div>
 <script>
@@ -331,7 +331,7 @@ function getStats(){
 function printTicket(regId){
   const reg=S.regs.find(r=>r.id===regId);if(!reg)return;
   const w=window.open('','_blank','width=320,height=420');if(!w)return;
-  w.document.write(`<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="utf-8"><title>Ticket ${reg.id}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:16px;width:280px;color:#0d1b2a}h1{font-size:12px;text-align:center;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a;border-bottom:2px dashed #aac;padding-bottom:8px;margin-bottom:12px}.id{text-align:center;font-size:30px;font-weight:bold;color:#1a6eff;font-family:monospace;letter-spacing:4px;margin-bottom:12px}.row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;gap:8px}.lbl{color:#666;flex-shrink:0}.val{font-weight:bold;text-align:right}.sep{border:none;border-top:1px dashed #ccc;margin:10px 0}.ft{text-align:center;font-size:9px;color:#888;margin-top:10px;line-height:1.5}@media print{@page{size:80mm auto;margin:4mm}body{width:72mm}}</style></head><body><h1>ARRIVIA — Ticket de llegada</h1><div class="id">${reg.id}</div><div class="row"><span class="lbl">Fecha / Hora</span><span class="val">${fmtDate(reg.timestamp)}</span></div><div class="row"><span class="lbl">Operación</span><span class="val">${reg.operationLabel}</span></div>${reg.country?`<div class="row"><span class="lbl">País</span><span class="val">${reg.country}</span></div>`:''}<hr class="sep"><div class="row"><span class="lbl">Tractora</span><span class="val">${reg.tractor}</span></div>${reg.trailer?`<div class="row"><span class="lbl">Remolque</span><span class="val">${reg.trailer}</span></div>`:''}${reg.reference?`<div class="row"><span class="lbl">Referencia</span><span class="val">${reg.reference}</span></div>`:''}<hr class="sep"><div class="ft">Espere en su vehículo<br>hasta ser llamado con el número de muelle</div></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket ${reg.id}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:16px;width:280px;color:#0d1b2a}h1{font-size:12px;text-align:center;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a;border-bottom:2px dashed #aac;padding-bottom:8px;margin-bottom:12px}.id{text-align:center;font-size:30px;font-weight:bold;color:#1a6eff;font-family:monospace;letter-spacing:4px;margin-bottom:12px}.row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;gap:8px}.lbl{color:#666;flex-shrink:0}.val{font-weight:bold;text-align:right}.sep{border:none;border-top:1px dashed #ccc;margin:10px 0}.ft{text-align:center;font-size:9px;color:#888;margin-top:10px;line-height:1.5}@media print{@page{size:80mm auto;margin:4mm}body{width:72mm}}</style></head><body><h1>ARRIVIA — Ticket de llegada</h1><div class="id">${reg.id}</div><div class="row"><span class="lbl">Fecha / Hora</span><span class="val">${fmtDate(reg.timestamp)}</span></div><div class="row"><span class="lbl">Operación</span><span class="val">${reg.operationLabel}</span></div>${reg.country?`<div class="row"><span class="lbl">País</span><span class="val">${reg.country}</span></div>`:''}<hr class="sep"><div class="row"><span class="lbl">Tractora</span><span class="val">${reg.tractor}</span></div>${reg.trailer?`<div class="row"><span class="lbl">Remolque</span><span class="val">${reg.trailer}</span></div>`:''}${reg.reference?`<div class="row"><span class="lbl">Referencia</span><span class="val">${reg.reference}</span></div>`:''}<hr class="sep"><div class="ft">Espere en su vehículo<br>hasta ser llamado con el número de muelle</div></body></html>`);
   w.document.close();setTimeout(()=>{w.focus();w.print();},400);
 }
 
@@ -465,7 +465,7 @@ loadRegsFromCloud().then(()=>render());
     }
   }catch(e){}
 })();
-setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){var focused=document.activeElement;var searchActive=focused&&focused.id==='searchInput';loadRegsFromCloud().then(()=>{if(!searchActive)render();});}},10000);
+setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},10000);
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
 function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
@@ -494,15 +494,15 @@ function goAdmin(){
   S.mode='pin';S.pinInput='';S.pinError=false;render();
 }
 function goKiosk(){S.mode='kiosk';S.adminAuth=false;render();}
-function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;if(tab==='search')S.searchQ='';render();}
+function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;render();}
 function setDetail(reg){S.detailReg=reg;render();}
 function clearDetail(){S.detailReg=null;render();}
 function doSearch(v){
   S.searchQ=v;
-  var sres=v.trim()?S.regs.filter(function(r){return r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase());}):[];
-  var noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-  var rows=sres.map(function(r){return '<button class="search-row" onclick="setDetail(S.regs.find(function(x){return x.id===\''+r.id+'\';}))">'+'<span class="search-row-id">'+r.id+'</span><span class="search-row-date">'+fmtDate(r.timestamp)+'</span><span class="search-row-op">'+r.operationLabel+'</span><span class="search-row-plates">'+r.tractor+' / '+(r.trailer||'—')+'</span></button>';}).join('');
-  var el=document.getElementById('searchResults');
+  const sres=v.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase())):[];
+  const noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
+  const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
+  const el=document.getElementById('searchResults');
   if(el) el.innerHTML=noRes+rows;
 }
 function setHistFilter(k,v){S.histFilter[k]=v;render();}
@@ -612,7 +612,6 @@ function render(){
     return;
   }
   if(S.mode==='admin'){
-    document.body.dir='ltr';document.documentElement.dir='ltr';
     const lastReg=S.regs.length?S.regs[S.regs.length-1]:null;
     const sres=S.searchQ.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(S.searchQ.toLowerCase())||r.tractor.toLowerCase().includes(S.searchQ.toLowerCase())||(r.trailer||'').toLowerCase().includes(S.searchQ.toLowerCase())):[];
     let body='';
@@ -640,26 +639,10 @@ function render(){
     } else {
       const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
       const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><div dir="ltr" lang="es" style="direction:ltr;unicode-bidi:isolate"><input id="searchInput" class="search-input" dir="ltr" lang="es" style="direction:ltr!important;text-align:left!important" placeholder="Buscar por matrícula o número de registro..."></div><div id="searchResults">${noRes}${rows}</div>`;
+      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input id="searchInput" class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)"><div id="searchResults">${noRes}${rows}</div>`;
     }
     app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="changePin()">🔑 Cambiar PIN</button><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
-    // Attach search input handler after render
-    if(S.adminTab==='search'&&!S.detailReg){
-      setTimeout(()=>{
-        const inp=document.getElementById('searchInput');
-        if(inp){
-          inp.addEventListener('input',(e)=>{
-            const v=e.target.value;
-            S.searchQ=v;
-            const sres=v.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase())):[];
-            const noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-            const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${r.id}'))"><span class="search-row-id">${r.id}</span><span class="search-row-date">${fmtDate(r.timestamp)}</span><span class="search-row-op">${r.operationLabel}</span><span class="search-row-plates">${r.tractor} / ${r.trailer||'—'}</span></button>`).join('');
-            const el=document.getElementById('searchResults');
-            if(el) el.innerHTML=noRes+rows;
-          });
-        }
-      },0);
-    }
+
     return;
   }
 
