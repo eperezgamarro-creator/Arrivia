@@ -609,32 +609,6 @@ function render(){
     const dots=S.pinError?'<span style="color:var(--red);font-size:28px;letter-spacing:8px">✗ ✗ ✗ ✗</span>':('<span style="letter-spacing:14px;font-size:32px">'+'●'.repeat(S.pinInput.length)+'<span style="opacity:.25">'+'●'.repeat(4-S.pinInput.length)+'</span></span>');
     const nums=[1,2,3,4,5,6,7,8,9].map(n=>`<button class="pin-btn" onclick="pinPress(${n})">${n}</button>`).join('');
     app.innerHTML=`<div class="pin-wrap"><div class="pin-box"><div class="pin-title">🔒 ADMINISTRACIÓN</div><div class="pin-sub">Introduce el PIN de acceso</div><div class="pin-display${S.pinError?' err':''}">${dots}</div><div class="pin-grid">${nums}<button class="pin-btn del" onclick="pinDel()">⌫</button><button class="pin-btn zero" onclick="pinPress(0)">0</button></div></div><button class="btn-ghost" onclick="goKiosk()" style="margin-top:8px">← Volver al kiosco</button></div>`;
-    // Attach search listener after render - only if search tab is active
-    if(S.adminTab==='search'&&!S.detailReg){
-      setTimeout(function(){
-        var inp=document.getElementById('searchInput');
-        if(inp&&!inp._listenerAdded){
-          inp._listenerAdded=true;
-          inp.addEventListener('input',function(){
-            S.searchQ=this.value;
-            var v=this.value;
-            var sres=v.trim()?S.regs.filter(function(r){return r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase());}):[];
-            var noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-            var rows=sres.map(function(r){return '<button class="search-row" onclick="setDetail(S.regs.find(function(x){return x.id===\''+r.id+'\';}))">'+'<span class="search-row-id">'+r.id+'</span>'+'</button>';}).join('');
-            var el=document.getElementById('searchResults');
-            if(el) el.innerHTML=noRes+rows;
-          });
-          inp.setAttribute('dir','ltr');
-          inp.style.direction='ltr';
-          inp.style.textAlign='left';
-          inp.style.unicodeBidi='bidi-override';
-          inp.addEventListener('focus',function(){
-            var len=this.value.length;
-            this.setSelectionRange(len,len);
-          });
-        }
-      },50);
-    }
     return;
   }
   if(S.mode==='admin'){
@@ -674,8 +648,15 @@ function render(){
       setTimeout(()=>{
         const inp=document.getElementById('searchInput');
         if(inp){
-          inp.addEventListener('input',(e)=>{S.searchQ=e.target.value;render();});
-          inp.focus();
+          inp.addEventListener('input',(e)=>{
+            const v=e.target.value;
+            S.searchQ=v;
+            const sres=v.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase())):[];
+            const noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
+            const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${r.id}'))"><span class="search-row-id">${r.id}</span><span class="search-row-date">${fmtDate(r.timestamp)}</span><span class="search-row-op">${r.operationLabel}</span><span class="search-row-plates">${r.tractor} / ${r.trailer||'—'}</span></button>`).join('');
+            const el=document.getElementById('searchResults');
+            if(el) el.innerHTML=noRes+rows;
+          });
         }
       },0);
     }
