@@ -128,7 +128,7 @@ textarea.field-input{resize:none;min-height:90px}
 .voice-box-txt{font-size:14px;color:var(--tx);line-height:1.55}
 .btn-pdf{background:var(--blu);border:none;border-radius:6px;padding:12px 24px;color:#fff;font-family:var(--hb);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
 .btn-pdf:hover{background:var(--bld)}
-.search-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:15px;outline:none;margin-bottom:16px;direction:ltr;text-align:left}
+.search-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:15px;outline:none;margin-bottom:16px}
 .search-input:focus{border-color:var(--blu)}
 .search-input::placeholder{color:var(--tx3)}
 .search-row{background:var(--card);border:1px solid var(--brd);border-radius:6px;padding:12px 16px;display:flex;align-items:center;gap:16px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;color:var(--tx)}
@@ -188,9 +188,9 @@ textarea.field-input{resize:none;min-height:90px}
 <div id="app"></div>
 <div class="watermark">ARRIVIA · Proyecto y diseño: Eduardo Perez Gamarro</div>
 <script>
-const LANG_ORDER=['es','en','fr','tr','ru','it','pt','cs','bg','pl','ro','de','el','nl','ar','lt','lv','sk','sl','da'];
-const RECOG={es:'es-ES',en:'en-GB',fr:'fr-FR',tr:'tr-TR',ru:'ru-RU',it:'it-IT',pt:'pt-PT',cs:'cs-CZ',bg:'bg-BG',pl:'pl-PL',ro:'ro-RO',de:'de-DE',el:'el-GR',nl:'nl-NL',ar:'ar-SA',lt:'lt-LT',lv:'lv-LV',sk:'sk-SK',sl:'sl-SI',da:'da-DK'};
-const FLAG_CC={es:'es',en:'gb',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cz',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'gr',nl:'nl',ar:'sa',lt:'lt',lv:'lv',sk:'sk',sl:'si',da:'dk'};
+const LANG_ORDER=['es','en','fr','tr','ru','it','pt','cs','bg','pl','ro','de','el','nl','ar'];
+const RECOG={es:'es-ES',en:'en-GB',fr:'fr-FR',tr:'tr-TR',ru:'ru-RU',it:'it-IT',pt:'pt-PT',cs:'cs-CZ',bg:'bg-BG',pl:'pl-PL',ro:'ro-RO',de:'de-DE',el:'el-GR',nl:'nl-NL',ar:'ar-SA'};
+const FLAG_CC={es:'es',en:'gb',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cz',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'gr',nl:'nl',ar:'sa'};
 const FLAG_BASE='https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/';
 const T={
   es:{flag:'🇪🇸',name:'Español',dir:'ltr',title:'Registro de Llegada',selectLang:'Selecciona tu idioma',selectOp:'Selecciona la operación',originPr:'País de procedencia',destPr:'País de destino',vehicleTitle:'Datos del vehículo',tractor:'Matrícula tractora',trailer:'Matrícula remolque',reference:'Nº Referencia / Expedición',notes:'Observaciones (opcional)',confirm:'CONFIRMAR',back:'Atrás',regOk:'Registro realizado correctamente.',regMsg:'Espere en su vehículo hasta que desde control le llamen para indicarle el número de muelle.',regNum:'Número de registro',newReg:'Nuevo registro',ops:{delivery:'Descarga / Entrega',pickup:'Carga / Recogida',customs:'Gestión Aduana',communication:'Comunicación',incident:'Incidencia'},voiceHint:'Pulsar para hablar',listening:'Escuchando...',translating:'Traduciendo...',voiceDone:'Guardado ✓',required:'Campo obligatorio'},
@@ -208,50 +208,33 @@ const T={
   el:{flag:'🇬🇷',name:'Ελληνικά',dir:'ltr',title:'Εγγραφή Άφιξης',selectLang:'Επιλέξτε γλώσσα',selectOp:'Επιλέξτε λειτουργία',originPr:'Χώρα προέλευσης',destPr:'Χώρα προορισμού',vehicleTitle:'Στοιχεία οχήματος',tractor:'Πινακίδα ελκυστήρα',trailer:'Πινακίδα ρυμουλκούμενου',reference:'Αρ. αναφοράς / αποστολής',notes:'Παρατηρήσεις (προαιρετικό)',confirm:'ΕΠΙΒΕΒΑΙΩΣΗ',back:'Πίσω',regOk:'Η εγγραφή ολοκληρώθηκε.',regMsg:'Παρακαλώ περιμένετε στο όχημά σας μέχρι ο έλεγχος να σας καλέσει με τον αριθμό αποβάθρας.',regNum:'Αριθμός εγγραφής',newReg:'Νέα εγγραφή',ops:{delivery:'Εκφόρτωση / Παράδοση',pickup:'Φόρτωση / Παραλαβή',customs:'Τελωνειακή Διαχείριση',communication:'Επικοινωνία',incident:'Συμβάν'},voiceHint:'Πατήστε για να μιλήσετε',listening:'Ακούω...',translating:'Μεταφράζω...',voiceDone:'Αποθηκεύτηκε ✓',required:'Υποχρεωτικό πεδίο'},
   nl:{flag:'🇳🇱',name:'Nederlands',dir:'ltr',title:'Aankomstregistratie',selectLang:'Kies uw taal',selectOp:'Kies de handeling',originPr:'Land van herkomst',destPr:'Land van bestemming',vehicleTitle:'Voertuiggegevens',tractor:'Kenteken trekker',trailer:'Kenteken oplegger',reference:'Referentie- / zendingsnr.',notes:'Opmerkingen (optioneel)',confirm:'BEVESTIGEN',back:'Terug',regOk:'Registratie voltooid.',regMsg:'Wacht in uw voertuig totdat de controle u belt met het docknummer.',regNum:'Registratienummer',newReg:'Nieuwe registratie',ops:{delivery:'Lossen / Levering',pickup:'Laden / Afhalen',customs:'Douanebeheer',communication:'Communicatie',incident:'Incident'},voiceHint:'Druk om te spreken',listening:'Luisteren...',translating:'Vertalen...',voiceDone:'Opgeslagen ✓',required:'Verplicht veld'},
   ar:{flag:'🇸🇦',name:'العربية',dir:'rtl',title:'تسجيل الوصول',selectLang:'اختر لغتك',selectOp:'اختر العملية',originPr:'بلد المنشأ',destPr:'بلد المقصد',vehicleTitle:'بيانات المركبة',tractor:'لوحة الجرار',trailer:'لوحة المقطورة',reference:'رقم المرجع / الشحنة',notes:'ملاحظات (اختياري)',confirm:'تأكيد',back:'رجوع',regOk:'تم التسجيل بنجاح.',regMsg:'يرجى الانتظار في مركبتك حتى يتصل بك مركز التحكم لإعلامك برقم الرصيف.',regNum:'رقم التسجيل',newReg:'تسجيل جديد',ops:{delivery:'تفريغ / تسليم',pickup:'تحميل / استلام',customs:'إدارة الجمارك',communication:'تواصل',incident:'حادثة'},voiceHint:'اضغط للتحدث',listening:'جاري الاستماع...',translating:'جاري الترجمة...',voiceDone:'تم الحفظ ✓',required:'حقل مطلوب'},
-  lt:{flag:'🇱🇹',name:'Lietuvių',dir:'ltr',title:'Atvykimo registracija',selectLang:'Pasirinkite kalbą',selectOp:'Pasirinkite operaciją',originPr:'Kilmės šalis',destPr:'Paskirties šalis',vehicleTitle:'Transporto priemonės duomenys',tractor:'Vilkiko valstybinis numeris',trailer:'Priekabos valstybinis numeris',reference:'Nuorodos / siuntos nr.',notes:'Pastabos (neprivaloma)',confirm:'PATVIRTINTI',back:'Atgal',regOk:'Registracija atlikta.',regMsg:'Prašome laukti savo transporto priemonėje, kol kontrolė paskambins su doko numeriu.',regNum:'Registracijos numeris',newReg:'Nauja registracija',ops:{delivery:'Iškrovimas / Pristatymas',pickup:'Pakrovimas / Paėmimas',customs:'Muitinės valdymas',communication:'Komunikacija',incident:'Incidentas'},voiceHint:'Paspauskite kalbėti',listening:'Klausau...',translating:'Verčiu...',voiceDone:'Išsaugota ✓',required:'Privalomas laukas'},
-  lv:{flag:'🇱🇻',name:'Latviešu',dir:'ltr',title:'Ierašanās reģistrācija',selectLang:'Izvēlieties valodu',selectOp:'Izvēlieties darbību',originPr:'Izcelsmes valsts',destPr:'Galamērķa valsts',vehicleTitle:'Transportlīdzekļa dati',tractor:'Vilcēja reģ. numurs',trailer:'Piekabes reģ. numurs',reference:'Atsauces / sūtījuma nr.',notes:'Piezīmes (neobligāti)',confirm:'APSTIPRINĀT',back:'Atpakaļ',regOk:'Reģistrācija pabeigta.',regMsg:'Lūdzu gaidiet savā transportlīdzeklī, līdz kontrole piezvanīs ar doka numuru.',regNum:'Reģistrācijas numurs',newReg:'Jauna reģistrācija',ops:{delivery:'Izkraušana / Piegāde',pickup:'Iekraušana / Savākšana',customs:'Muitas pārvaldība',communication:'Komunikācija',incident:'Incidents'},voiceHint:'Nospiediet, lai runātu',listening:'Klausos...',translating:'Tulkoju...',voiceDone:'Saglabāts ✓',required:'Obligāts lauks'},
-  sk:{flag:'🇸🇰',name:'Slovenčina',dir:'ltr',title:'Registrácia príchodu',selectLang:'Vyberte jazyk',selectOp:'Vyberte operáciu',originPr:'Krajina pôvodu',destPr:'Krajina určenia',vehicleTitle:'Údaje o vozidle',tractor:'ŠPZ ťahača',trailer:'ŠPZ návesu',reference:'Č. referencie / zásielky',notes:'Poznámky (voliteľné)',confirm:'POTVRDIŤ',back:'Späť',regOk:'Registrácia dokončená.',regMsg:'Prosím čakajte vo vozidle, kým vás dispečing nezavolá s číslom rampy.',regNum:'Číslo registrácie',newReg:'Nová registrácia',ops:{delivery:'Vykládka / Doručenie',pickup:'Nakládka / Vyzdvihnutie',customs:'Colná správa',communication:'Komunikácia',incident:'Incident'},voiceHint:'Stlačte pre hovorenie',listening:'Počúvam...',translating:'Prekladám...',voiceDone:'Uložené ✓',required:'Povinné pole'},
-  sl:{flag:'🇸🇮',name:'Slovenščina',dir:'ltr',title:'Registracija prihoda',selectLang:'Izberite jezik',selectOp:'Izberite operacijo',originPr:'Država izvora',destPr:'Namembna država',vehicleTitle:'Podatki o vozilu',tractor:'Reg. št. vlačilca',trailer:'Reg. št. prikolice',reference:'Ref. / št. pošiljke',notes:'Opombe (neobvezno)',confirm:'POTRDI',back:'Nazaj',regOk:'Registracija končana.',regMsg:'Prosimo počakajte v vozilu, dokler vas kontrola ne pokliče s številko doka.',regNum:'Registrijska številka',newReg:'Nova registracija',ops:{delivery:'Razkladanje / Dostava',pickup:'Nakladanje / Prevzem',customs:'Carinska uprava',communication:'Komunikacija',incident:'Incident'},voiceHint:'Pritisnite za govor',listening:'Poslušam...',translating:'Prevajam...',voiceDone:'Shranjeno ✓',required:'Obvezno polje'},
-  da:{flag:'🇩🇰',name:'Dansk',dir:'ltr',title:'Ankomstregistrering',selectLang:'Vælg dit sprog',selectOp:'Vælg operation',originPr:'Oprindelsesland',destPr:'Destinationsland',vehicleTitle:'Køretøjsdata',tractor:'Traktor nummerplade',trailer:'Trailer nummerplade',reference:'Reference / forsendelsesnr.',notes:'Bemærkninger (valgfrit)',confirm:'BEKRÆFT',back:'Tilbage',regOk:'Registrering gennemført.',regMsg:'Vent venligst i dit køretøj, til kontrollen ringer med docknummeret.',regNum:'Registreringsnummer',newReg:'Ny registrering',ops:{delivery:'Aflæsning / Levering',pickup:'Pålæsning / Afhentning',customs:'Toldstyring',communication:'Kommunikation',incident:'Hændelse'},voiceHint:'Tryk for at tale',listening:'Lytter...',translating:'Oversætter...',voiceDone:'Gemt ✓',required:'Obligatorisk felt'},
 };
 const COUNTRIES=[
-  {id:'ES',es:'España',en:'Spain',fr:'Espagne',tr:'İspanya',ru:'Испания',it:'Spagna',pt:'Espanha',cs:'Španělsko',bg:'Испания',pl:'Hiszpania',ro:'Spania',de:'Spanien',el:'Ισπανία',nl:'Spanje',ar:'إسبانيا',lt:'Ispanija',lv:'Spānija',sk:'Španielsko',sl:'Španija',da:'Spanien'},
-  {id:'PT',es:'Portugal',en:'Portugal',fr:'Portugal',tr:'Portekiz',ru:'Португалия',it:'Portogallo',pt:'Portugal',cs:'Portugalsko',bg:'Португалия',pl:'Portugalia',ro:'Portugalia',de:'Portugal',el:'Πορτογαλία',nl:'Portugal',ar:'البرتغال',lt:'Portugalija',lv:'Portugāle',sk:'Portugalsko',sl:'Portugalska',da:'Portugal'},
-  {id:'FR',es:'Francia',en:'France',fr:'France',tr:'Fransa',ru:'Франция',it:'Francia',pt:'França',cs:'Francie',bg:'Франция',pl:'Francja',ro:'Franța',de:'Frankreich',el:'Γαλλία',nl:'Frankrijk',ar:'فرنسا',lt:'Prancūzija',lv:'Francija',sk:'Francúzsko',sl:'Francija',da:'Frankrig'},
-  {id:'IT',es:'Italia',en:'Italy',fr:'Italie',tr:'İtalya',ru:'Италия',it:'Italia',pt:'Itália',cs:'Itálie',bg:'Италия',pl:'Włochy',ro:'Italia',de:'Italien',el:'Ιταλία',nl:'Italië',ar:'إيطاليا',lt:'Italija',lv:'Itālija',sk:'Taliansko',sl:'Italija',da:'Italien'},
-  {id:'DE',es:'Alemania',en:'Germany',fr:'Allemagne',tr:'Almanya',ru:'Германия',it:'Germania',pt:'Alemanha',cs:'Německo',bg:'Германия',pl:'Niemcy',ro:'Germania',de:'Deutschland',el:'Γερμανία',nl:'Duitsland',ar:'ألمانيا',lt:'Vokietija',lv:'Vācija',sk:'Nemecko',sl:'Nemčija',da:'Tyskland'},
-  {id:'NL',es:'Países Bajos',en:'Netherlands',fr:'Pays-Bas',tr:'Hollanda',ru:'Нидерланды',it:'Paesi Bassi',pt:'Países Baixos',cs:'Nizozemsko',bg:'Нидерландия',pl:'Holandia',ro:'Olanda',de:'Niederlande',el:'Ολλανδία',nl:'Nederland',ar:'هولندا',lt:'Nyderlandai',lv:'Nīderlande',sk:'Holandsko',sl:'Nizozemska',da:'Holland'},
-  {id:'BE',es:'Bélgica',en:'Belgium',fr:'Belgique',tr:'Belçika',ru:'Бельгия',it:'Belgio',pt:'Bélgica',cs:'Belgie',bg:'Белгия',pl:'Belgia',ro:'Belgia',de:'Belgien',el:'Βέλγιο',nl:'België',ar:'بلجيكا',lt:'Belgija',lv:'Beļģija',sk:'Belgicko',sl:'Belgija',da:'Belgien'},
-  {id:'PL',es:'Polonia',en:'Poland',fr:'Pologne',tr:'Polonya',ru:'Польша',it:'Polonia',pt:'Polónia',cs:'Polsko',bg:'Полша',pl:'Polska',ro:'Polonia',de:'Polen',el:'Πολωνία',nl:'Polen',ar:'بولندا',lt:'Lenkija',lv:'Polija',sk:'Poľsko',sl:'Poljska',da:'Polen'},
-  {id:'CZ',es:'Rep. Checa',en:'Czech Rep.',fr:'Rép. Tchèque',tr:'Çekya',ru:'Чехия',it:'Rep. Ceca',pt:'Rep. Checa',cs:'Česká republika',bg:'Чехия',pl:'Czechy',ro:'Cehia',de:'Tschechien',el:'Τσεχία',nl:'Tsjechië',ar:'جمهورية التشيك',lt:'Čekija',lv:'Čehija',sk:'Česká republika',sl:'Češka',da:'Tjekkiet'},
-  {id:'SK',es:'Eslovaquia',en:'Slovakia',fr:'Slovaquie',tr:'Slovakya',ru:'Словакия',it:'Slovacchia',pt:'Eslováquia',cs:'Slovensko',bg:'Словакия',pl:'Słowacja',ro:'Slovacia',de:'Slowakei',el:'Σλοβακία',nl:'Slowakije',ar:'سلوفاكيا',lt:'Slovakija',lv:'Slovākija',sk:'Slovensko',sl:'Slovaška',da:'Slovakiet'},
-  {id:'AT',es:'Austria',en:'Austria',fr:'Autriche',tr:'Avusturya',ru:'Австрия',it:'Austria',pt:'Áustria',cs:'Rakousko',bg:'Австрия',pl:'Austria',ro:'Austria',de:'Österreich',el:'Αυστρία',nl:'Oostenrijk',ar:'النمسا',lt:'Austrija',lv:'Austrija',sk:'Rakúsko',sl:'Avstrija',da:'Østrig'},
-  {id:'HU',es:'Hungría',en:'Hungary',fr:'Hongrie',tr:'Macaristan',ru:'Венгрия',it:'Ungheria',pt:'Hungria',cs:'Maďarsko',bg:'Унгария',pl:'Węgry',ro:'Ungaria',de:'Ungarn',el:'Ουγγαρία',nl:'Hongarije',ar:'المجر',lt:'Vengrija',lv:'Ungārija',sk:'Maďarsko',sl:'Madžarska',da:'Ungarn'},
-  {id:'RO',es:'Rumanía',en:'Romania',fr:'Roumanie',tr:'Romanya',ru:'Румыния',it:'Romania',pt:'Roménia',cs:'Rumunsko',bg:'Румъния',pl:'Rumunia',ro:'România',de:'Rumänien',el:'Ρουμανία',nl:'Roemenië',ar:'رومانيا',lt:'Rumunija',lv:'Rumānija',sk:'Rumunsko',sl:'Romunija',da:'Rumænien'},
-  {id:'BG',es:'Bulgaria',en:'Bulgaria',fr:'Bulgarie',tr:'Bulgaristan',ru:'Болгария',it:'Bulgaria',pt:'Bulgária',cs:'Bulharsko',bg:'България',pl:'Bułgaria',ro:'Bulgaria',de:'Bulgarien',el:'Βουλγαρία',nl:'Bulgarije',ar:'بلغاريا',lt:'Bulgarija',lv:'Bulgārija',sk:'Bulharsko',sl:'Bolgarija',da:'Bulgarien'},
-  {id:'GR',es:'Grecia',en:'Greece',fr:'Grèce',tr:'Yunanistan',ru:'Греция',it:'Grecia',pt:'Grécia',cs:'Řecko',bg:'Гърция',pl:'Grecja',ro:'Grecia',de:'Griechenland',el:'Ελλάδα',nl:'Griekenland',ar:'اليونان',lt:'Graikija',lv:'Grieķija',sk:'Grécko',sl:'Grčija',da:'Grækenland'},
-  {id:'TR',es:'Turquía',en:'Turkey',fr:'Turquie',tr:'Türkiye',ru:'Турция',it:'Turchia',pt:'Turquia',cs:'Turecko',bg:'Турция',pl:'Turcja',ro:'Turcia',de:'Türkei',el:'Τουρκία',nl:'Turkije',ar:'تركيا',lt:'Turkija',lv:'Turcija',sk:'Turecko',sl:'Turčija',da:'Tyrkiet'},
-  {id:'RU',es:'Rusia',en:'Russia',fr:'Russie',tr:'Rusya',ru:'Россия',it:'Russia',pt:'Rússia',cs:'Rusko',bg:'Русия',pl:'Rosja',ro:'Rusia',de:'Russland',el:'Ρωσία',nl:'Rusland',ar:'روسيا',lt:'Rusija',lv:'Krievija',sk:'Rusko',sl:'Rusija',da:'Rusland'},
-  {id:'UA',es:'Ucrania',en:'Ukraine',fr:'Ukraine',tr:'Ukrayna',ru:'Украина',it:'Ucraina',pt:'Ucrânia',cs:'Ukrajina',bg:'Украйна',pl:'Ukraina',ro:'Ucraina',de:'Ukraine',el:'Ουκρανία',nl:'Oekraïne',ar:'أوكرانيا',lt:'Ukraina',lv:'Ukraina',sk:'Ukrajina',sl:'Ukrajina',da:'Ukraine'},
-  {id:'GB',es:'Reino Unido',en:'United Kingdom',fr:'Royaume-Uni',tr:'Birleşik Krallık',ru:'Великобритания',it:'Regno Unito',pt:'Reino Unido',cs:'Spojené království',bg:'Великобритания',pl:'Wielka Brytania',ro:'Regatul Unit',de:'Ver. Königreich',el:'Ηνωμένο Βασίλειο',nl:'Ver. Koninkrijk',ar:'المملكة المتحدة',lt:'Jungtinė Karalystė',lv:'Lielbritānija',sk:'Spojené kráľovstvo',sl:'Velika Britanija',da:'Storbritannien'},
-  {id:'CH',es:'Suiza',en:'Switzerland',fr:'Suisse',tr:'İsviçre',ru:'Швейцария',it:'Svizzera',pt:'Suíça',cs:'Švýcarsko',bg:'Швейцария',pl:'Szwajcaria',ro:'Elveția',de:'Schweiz',el:'Ελβετία',nl:'Zwitserland',ar:'سويسرا',lt:'Šveicarija',lv:'Šveice',sk:'Švajčiarsko',sl:'Švica',da:'Schweiz'},
-  {id:'SE',es:'Suecia',en:'Sweden',fr:'Suède',tr:'İsveç',ru:'Швеция',it:'Svezia',pt:'Suécia',cs:'Švédsko',bg:'Швеция',pl:'Szwecja',ro:'Suedia',de:'Schweden',el:'Σουηδία',nl:'Zweden',ar:'السويد',lt:'Švedija',lv:'Zviedrija',sk:'Švédsko',sl:'Švedska',da:'Sverige'},
-  {id:'MA',es:'Marruecos',en:'Morocco',fr:'Maroc',tr:'Fas',ru:'Марокко',it:'Marocco',pt:'Marrocos',cs:'Maroko',bg:'Мароко',pl:'Maroko',ro:'Maroc',de:'Marokko',el:'Μαρόκο',nl:'Marokko',ar:'المغرب',lt:'Marokas',lv:'Maroka',sk:'Maroko',sl:'Maroko',da:'Marokko'},
-  {id:'TN',es:'Túnez',en:'Tunisia',fr:'Tunisie',tr:'Tunus',ru:'Тунис',it:'Tunisia',pt:'Tunísia',cs:'Tunisko',bg:'Тунис',pl:'Tunezja',ro:'Tunisia',de:'Tunesien',el:'Τυνησία',nl:'Tunesië',ar:'تونس',lt:'Tunisas',lv:'Tunisija',sk:'Tunisko',sl:'Tunizija',da:'Tunesien'},
-  {id:'LT',es:'Lituania',en:'Lithuania',fr:'Lituanie',tr:'Litvanya',ru:'Литва',it:'Lituania',pt:'Lituânia',cs:'Litva',bg:'Литва',pl:'Litwa',ro:'Lituania',de:'Litauen',el:'Λιθουανία',nl:'Litouwen',ar:'ليتوانيا',lt:'Lietuva',lv:'Lietuva',sk:'Litva',sl:'Litva',da:'Litauen'},
-  {id:'LV',es:'Letonia',en:'Latvia',fr:'Lettonie',tr:'Letonya',ru:'Латвия',it:'Lettonia',pt:'Letónia',cs:'Lotyšsko',bg:'Латвия',pl:'Łotwa',ro:'Letonia',de:'Lettland',el:'Λετονία',nl:'Letland',ar:'لاتفيا',lt:'Latvija',lv:'Latvija',sk:'Lotyšsko',sl:'Latvija',da:'Letland'},
-  {id:'EE',es:'Estonia',en:'Estonia',fr:'Estonie',tr:'Estonya',ru:'Эстония',it:'Estonia',pt:'Estónia',cs:'Estonsko',bg:'Естония',pl:'Estonia',ro:'Estonia',de:'Estland',el:'Εσθονία',nl:'Estland',ar:'إستونيا',lt:'Estija',lv:'Igaunija',sk:'Estónsko',sl:'Estonija',da:'Estland'},
-  {id:'SI',es:'Eslovenia',en:'Slovenia',fr:'Slovénie',tr:'Slovenya',ru:'Словения',it:'Slovenia',pt:'Eslovénia',cs:'Slovinsko',bg:'Словения',pl:'Słowenia',ro:'Slovenia',de:'Slowenien',el:'Σλοβενία',nl:'Slovenië',ar:'سلوفينيا',lt:'Slovėnija',lv:'Slovēnija',sk:'Slovinsko',sl:'Slovenija',da:'Slovenien'},
-  {id:'DK',es:'Dinamarca',en:'Denmark',fr:'Danemark',tr:'Danimarka',ru:'Дания',it:'Danimarca',pt:'Dinamarca',cs:'Dánsko',bg:'Дания',pl:'Dania',ro:'Danemarca',de:'Dänemark',el:'Δανία',nl:'Denemarken',ar:'الدنمارك',lt:'Danija',lv:'Dānija',sk:'Dánsko',sl:'Danska',da:'Danmark'},
-  {id:'LU',es:'Luxemburgo',en:'Luxembourg',fr:'Luxembourg',tr:'Lüksemburg',ru:'Люксембург',it:'Lussemburgo',pt:'Luxemburgo',cs:'Lucembursko',bg:'Люксембург',pl:'Luksemburg',ro:'Luxemburg',de:'Luxemburg',el:'Λουξεμβούργο',nl:'Luxemburg',ar:'لوكسمبورغ',lt:'Liuksemburgas',lv:'Luksemburga',sk:'Luxembursko',sl:'Luksemburg',da:'Luxembourg'},
-  {id:'LT',es:'Lituania',en:'Lithuania',fr:'Lituanie',tr:'Litvanya',ru:'Литва',it:'Lituania',pt:'Lituânia',cs:'Litva',bg:'Литва',pl:'Litwa',ro:'Lituania',de:'Litauen',el:'Λιθουανία',nl:'Litouwen',ar:'ليتوانيا',lt:'Lietuva',lv:'Lietuva',sk:'Litva',sl:'Litva',da:'Litauen'},
-  {id:'LV',es:'Letonia',en:'Latvia',fr:'Lettonie',tr:'Letonya',ru:'Латвия',it:'Lettonia',pt:'Letónia',cs:'Lotyšsko',bg:'Латвия',pl:'Łotwa',ro:'Letonia',de:'Lettland',el:'Λετονία',nl:'Letland',ar:'لاتفيا',lt:'Latvija',lv:'Latvija',sk:'Lotyšsko',sl:'Latvija',da:'Letland'},
-  {id:'EE',es:'Estonia',en:'Estonia',fr:'Estonie',tr:'Estonya',ru:'Эстония',it:'Estonia',pt:'Estónia',cs:'Estonsko',bg:'Естония',pl:'Estonia',ro:'Estonia',de:'Estland',el:'Εσθονία',nl:'Estland',ar:'إستونيا',lt:'Estija',lv:'Igaunija',sk:'Estónsko',sl:'Estonija',da:'Estland'},
-  {id:'SI',es:'Eslovenia',en:'Slovenia',fr:'Slovénie',tr:'Slovenya',ru:'Словения',it:'Slovenia',pt:'Eslovénia',cs:'Slovinsko',bg:'Словения',pl:'Słowenia',ro:'Slovenia',de:'Slowenien',el:'Σλοβενία',nl:'Slovenië',ar:'سلوفينيا',lt:'Slovėnija',lv:'Slovēnija',sk:'Slovinsko',sl:'Slovenija',da:'Slovenien'},
-  {id:'DK',es:'Dinamarca',en:'Denmark',fr:'Danemark',tr:'Danimarka',ru:'Дания',it:'Danimarca',pt:'Dinamarca',cs:'Dánsko',bg:'Дания',pl:'Dania',ro:'Danemarca',de:'Dänemark',el:'Δανία',nl:'Denemarken',ar:'الدنمارك',lt:'Danija',lv:'Dānija',sk:'Dánsko',sl:'Danska',da:'Danmark'},
-  {id:'LU',es:'Luxemburgo',en:'Luxembourg',fr:'Luxembourg',tr:'Lüksemburg',ru:'Люксембург',it:'Lussemburgo',pt:'Luxemburgo',cs:'Lucembursko',bg:'Люксембург',pl:'Luksemburg',ro:'Luxemburg',de:'Luxemburg',el:'Λουξεμβούργο',nl:'Luxemburg',ar:'لوكسمبورغ',lt:'Liuksemburgas',lv:'Luksemburga',sk:'Luxembursko',sl:'Luksemburg',da:'Luxembourg'},
-  {id:'HR',es:'Croacia',en:'Croatia',fr:'Croatie',tr:'Hırvatistan',ru:'Хорватия',it:'Croazia',pt:'Croácia',cs:'Chorvatsko',bg:'Хърватия',pl:'Chorwacja',ro:'Croația',de:'Kroatien',el:'Κροατία',nl:'Kroatië',ar:'كرواتيا',lt:'Kroatija',lv:'Horvātija',sk:'Chorvátsko',sl:'Hrvaška',da:'Kroatien'},
-  {id:'RS',es:'Serbia',en:'Serbia',fr:'Serbie',tr:'Sırbistan',ru:'Сербия',it:'Serbia',pt:'Sérvia',cs:'Srbsko',bg:'Сърбия',pl:'Serbia',ro:'Serbia',de:'Serbien',el:'Σερβία',nl:'Servië',ar:'صربيا',lt:'Serbija',lv:'Serbija',sk:'Srbsko',sl:'Srbija',da:'Serbien'},
+  {id:'ES',es:'España',en:'Spain',fr:'Espagne',tr:'İspanya',ru:'Испания',it:'Spagna',pt:'Espanha',cs:'Španělsko',bg:'Испания',pl:'Hiszpania',ro:'Spania',de:'Spanien',el:'Ισπανία',nl:'Spanje',ar:'إسبانيا'},
+  {id:'PT',es:'Portugal',en:'Portugal',fr:'Portugal',tr:'Portekiz',ru:'Португалия',it:'Portogallo',pt:'Portugal',cs:'Portugalsko',bg:'Португалия',pl:'Portugalia',ro:'Portugalia',de:'Portugal',el:'Πορτογαλία',nl:'Portugal',ar:'البرتغال'},
+  {id:'FR',es:'Francia',en:'France',fr:'France',tr:'Fransa',ru:'Франция',it:'Francia',pt:'França',cs:'Francie',bg:'Франция',pl:'Francja',ro:'Franța',de:'Frankreich',el:'Γαλλία',nl:'Frankrijk',ar:'فرنسا'},
+  {id:'IT',es:'Italia',en:'Italy',fr:'Italie',tr:'İtalya',ru:'Италия',it:'Italia',pt:'Itália',cs:'Itálie',bg:'Италия',pl:'Włochy',ro:'Italia',de:'Italien',el:'Ιταλία',nl:'Italië',ar:'إيطاليا'},
+  {id:'DE',es:'Alemania',en:'Germany',fr:'Allemagne',tr:'Almanya',ru:'Германия',it:'Germania',pt:'Alemanha',cs:'Německo',bg:'Германия',pl:'Niemcy',ro:'Germania',de:'Deutschland',el:'Γερμανία',nl:'Duitsland',ar:'ألمانيا'},
+  {id:'NL',es:'Países Bajos',en:'Netherlands',fr:'Pays-Bas',tr:'Hollanda',ru:'Нидерланды',it:'Paesi Bassi',pt:'Países Baixos',cs:'Nizozemsko',bg:'Нидерландия',pl:'Holandia',ro:'Olanda',de:'Niederlande',el:'Ολλανδία',nl:'Nederland',ar:'هولندا'},
+  {id:'BE',es:'Bélgica',en:'Belgium',fr:'Belgique',tr:'Belçika',ru:'Бельгия',it:'Belgio',pt:'Bélgica',cs:'Belgie',bg:'Белгия',pl:'Belgia',ro:'Belgia',de:'Belgien',el:'Βέλγιο',nl:'België',ar:'بلجيكا'},
+  {id:'PL',es:'Polonia',en:'Poland',fr:'Pologne',tr:'Polonya',ru:'Польша',it:'Polonia',pt:'Polónia',cs:'Polsko',bg:'Полша',pl:'Polska',ro:'Polonia',de:'Polen',el:'Πολωνία',nl:'Polen',ar:'بولندا'},
+  {id:'CZ',es:'Rep. Checa',en:'Czech Rep.',fr:'Rép. Tchèque',tr:'Çekya',ru:'Чехия',it:'Rep. Ceca',pt:'Rep. Checa',cs:'Česká republika',bg:'Чехия',pl:'Czechy',ro:'Cehia',de:'Tschechien',el:'Τσεχία',nl:'Tsjechië',ar:'جمهورية التشيك'},
+  {id:'SK',es:'Eslovaquia',en:'Slovakia',fr:'Slovaquie',tr:'Slovakya',ru:'Словакия',it:'Slovacchia',pt:'Eslováquia',cs:'Slovensko',bg:'Словакия',pl:'Słowacja',ro:'Slovacia',de:'Slowakei',el:'Σλοβακία',nl:'Slowakije',ar:'سلوفاكيا'},
+  {id:'AT',es:'Austria',en:'Austria',fr:'Autriche',tr:'Avusturya',ru:'Австрия',it:'Austria',pt:'Áustria',cs:'Rakousko',bg:'Австрия',pl:'Austria',ro:'Austria',de:'Österreich',el:'Αυστρία',nl:'Oostenrijk',ar:'النمسا'},
+  {id:'HU',es:'Hungría',en:'Hungary',fr:'Hongrie',tr:'Macaristan',ru:'Венгрия',it:'Ungheria',pt:'Hungria',cs:'Maďarsko',bg:'Унгария',pl:'Węgry',ro:'Ungaria',de:'Ungarn',el:'Ουγγαρία',nl:'Hongarije',ar:'المجر'},
+  {id:'RO',es:'Rumanía',en:'Romania',fr:'Roumanie',tr:'Romanya',ru:'Румыния',it:'Romania',pt:'Roménia',cs:'Rumunsko',bg:'Румъния',pl:'Rumunia',ro:'România',de:'Rumänien',el:'Ρουμανία',nl:'Roemenië',ar:'رومانيا'},
+  {id:'BG',es:'Bulgaria',en:'Bulgaria',fr:'Bulgarie',tr:'Bulgaristan',ru:'Болгария',it:'Bulgaria',pt:'Bulgária',cs:'Bulharsko',bg:'България',pl:'Bułgaria',ro:'Bulgaria',de:'Bulgarien',el:'Βουλγαρία',nl:'Bulgarije',ar:'بلغاريا'},
+  {id:'GR',es:'Grecia',en:'Greece',fr:'Grèce',tr:'Yunanistan',ru:'Греция',it:'Grecia',pt:'Grécia',cs:'Řecko',bg:'Гърция',pl:'Grecja',ro:'Grecia',de:'Griechenland',el:'Ελλάδα',nl:'Griekenland',ar:'اليونان'},
+  {id:'TR',es:'Turquía',en:'Turkey',fr:'Turquie',tr:'Türkiye',ru:'Турция',it:'Turchia',pt:'Turquia',cs:'Turecko',bg:'Турция',pl:'Turcja',ro:'Turcia',de:'Türkei',el:'Τουρκία',nl:'Turkije',ar:'تركيا'},
+  {id:'RU',es:'Rusia',en:'Russia',fr:'Russie',tr:'Rusya',ru:'Россия',it:'Russia',pt:'Rússia',cs:'Rusko',bg:'Русия',pl:'Rosja',ro:'Rusia',de:'Russland',el:'Ρωσία',nl:'Rusland',ar:'روسيا'},
+  {id:'UA',es:'Ucrania',en:'Ukraine',fr:'Ukraine',tr:'Ukrayna',ru:'Украина',it:'Ucraina',pt:'Ucrânia',cs:'Ukrajina',bg:'Украйна',pl:'Ukraina',ro:'Ucraina',de:'Ukraine',el:'Ουκρανία',nl:'Oekraïne',ar:'أوكرانيا'},
+  {id:'GB',es:'Reino Unido',en:'United Kingdom',fr:'Royaume-Uni',tr:'Birleşik Krallık',ru:'Великобритания',it:'Regno Unito',pt:'Reino Unido',cs:'Spojené království',bg:'Великобритания',pl:'Wielka Brytania',ro:'Regatul Unit',de:'Ver. Königreich',el:'Ηνωμένο Βασίλειο',nl:'Ver. Koninkrijk',ar:'المملكة المتحدة'},
+  {id:'CH',es:'Suiza',en:'Switzerland',fr:'Suisse',tr:'İsviçre',ru:'Швейцария',it:'Svizzera',pt:'Suíça',cs:'Švýcarsko',bg:'Швейцария',pl:'Szwajcaria',ro:'Elveția',de:'Schweiz',el:'Ελβετία',nl:'Zwitserland',ar:'سويسرا'},
+  {id:'SE',es:'Suecia',en:'Sweden',fr:'Suède',tr:'İsveç',ru:'Швеция',it:'Svezia',pt:'Suécia',cs:'Švédsko',bg:'Швеция',pl:'Szwecja',ro:'Suedia',de:'Schweden',el:'Σουηδία',nl:'Zweden',ar:'السويد'},
+  {id:'MA',es:'Marruecos',en:'Morocco',fr:'Maroc',tr:'Fas',ru:'Марокко',it:'Marocco',pt:'Marrocos',cs:'Maroko',bg:'Мароко',pl:'Maroko',ro:'Maroc',de:'Marokko',el:'Μαρόκο',nl:'Marokko',ar:'المغرب'},
+  {id:'TN',es:'Túnez',en:'Tunisia',fr:'Tunisie',tr:'Tunus',ru:'Тунис',it:'Tunisia',pt:'Tunísia',cs:'Tunisko',bg:'Тунис',pl:'Tunezja',ro:'Tunisia',de:'Tunesien',el:'Τυνησία',nl:'Tunesië',ar:'تونس'},
+  {id:'HR',es:'Croacia',en:'Croatia',fr:'Croatie',tr:'Hırvatistan',ru:'Хорватия',it:'Croazia',pt:'Croácia',cs:'Chorvatsko',bg:'Хърватия',pl:'Chorwacja',ro:'Croația',de:'Kroatien',el:'Κροατία',nl:'Kroatië',ar:'كرواتيا'},
+  {id:'RS',es:'Serbia',en:'Serbia',fr:'Serbie',tr:'Sırbistan',ru:'Сербия',it:'Serbia',pt:'Sérvia',cs:'Srbsko',bg:'Сърбия',pl:'Serbia',ro:'Serbia',de:'Serbien',el:'Σερβία',nl:'Servië',ar:'صربيا'},
 ];
 const OP_ORDER=['delivery','pickup','customs','communication','incident'];
 const OP_ICONS={delivery:'<span style="font-size:36px;font-weight:900;color:#7db8ff;line-height:1;font-family:Arial,sans-serif">&#8594;</span>',pickup:'<span style="font-size:36px;font-weight:900;color:#7db8ff;line-height:1;font-family:Arial,sans-serif">&#8592;</span>',customs:'🛃',communication:'💬',incident:'⚠️'};
@@ -288,18 +271,6 @@ function pinPress(d){
   } else render();
 }
 function pinDel(){if(S.pinInput.length){S.pinInput=S.pinInput.slice(0,-1);render();}}
-function changePin(){
-  const current=prompt('PIN actual:');
-  if(current===null)return;
-  if(current!==getPin()){alert('PIN incorrecto.');return;}
-  const n1=prompt('Nuevo PIN (4 dígitos):');
-  if(n1===null)return;
-  if(!/^\d{4}$/.test(n1)){alert('El PIN debe tener exactamente 4 dígitos.');return;}
-  const n2=prompt('Repite el nuevo PIN:');
-  if(n2!==n1){alert('Los PINs no coinciden.');return;}
-  localStorage.setItem('arrivia_pin',n1);
-  alert('✅ PIN cambiado correctamente.');
-}
 
 /* ── COUNTDOWN ── */
 function startCountdown(){
@@ -340,7 +311,7 @@ let recog=null;
 async function translateToSpanish(text, sourceLang){
   try{
     const sl=sourceLang||S.lang;
-    const langMap={es:'es',en:'en',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cs',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'el',nl:'nl',ar:'ar',lt:'lt',lv:'lv',sk:'sk',sl:'sl',da:'da'};
+    const langMap={es:'es',en:'en',fr:'fr',tr:'tr',ru:'ru',it:'it',pt:'pt',cs:'cs',bg:'bg',pl:'pl',ro:'ro',de:'de',el:'el',nl:'nl',ar:'ar'};
     const slCode=langMap[sl]||sl;
     if(slCode==='es') return text;
     const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${slCode}|es`;
@@ -366,20 +337,13 @@ function handleVoice(){
     else S.voiceError='';
     updateMicUI();
   };
-  recog.onend=()=>{
-    if(S.voiceState==='listening'){S.voiceState='idle';updateMicUI();}
-  };
+  recog.onend=()=>{if(S.voiceState==='listening'){S.voiceState='idle';updateMicUI();}};
   recog.onresult=async(e)=>{
     S.voiceError='';
     const transcript=Array.from(e.results).map(r=>r[0].transcript).join(' ');
     S.voiceState='translating';updateMicUI();
     const translated=await translateToSpanish(transcript,S.lang);
     S.pendingVoice=S.pendingVoice?S.pendingVoice+' | '+translated:translated;
-    if(S.regs.length>0){
-      const last=S.regs[S.regs.length-1];
-      last.voiceText=last.voiceText?last.voiceText+' | '+translated:translated;
-      updateVoiceInCloud(last.id,last.voiceText);
-    }
     S.voiceState='done';updateMicUI();
     setTimeout(()=>{S.voiceState='idle';updateMicUI();},2500);
   };
@@ -408,64 +372,14 @@ function updateMicUI(){
   }
 }
 
-/* ── SUPABASE ── */
-const SB_URL='https://urrnimiciufpynjjwpvz.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVycm5pbWljaXVmcHluamp3cHZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjUwMDgsImV4cCI6MjA5MzIwMTAwOH0.AlAN38PhNSB6f6sQ1EkNe9yFtlIFN-mn2bwwPYlRhnY';
-const SB_HDR={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
-
-async function saveRegToCloud(reg){
-  try{
-    const body={reg_id:reg.id,timestamp:reg.timestamp,operation:reg.operation,operation_label:reg.operationLabel,country_type:reg.countryType||'',country:reg.country||'',tractor:reg.tractor,trailer:reg.trailer||'',reference:reg.reference||'',notes:reg.notes||'',voice_text:reg.voiceText||''};
-    await fetch(SB_URL+'/rest/v1/Registros',{method:'POST',headers:{...SB_HDR,'Prefer':'return=minimal'},body:JSON.stringify(body)});
-  }catch(e){console.error('Supabase save error',e);}
-}
-
-async function loadRegsFromCloud(){
-  try{
-    const r=await fetch(SB_URL+'/rest/v1/Registros?select=*&order=created_at.asc',{headers:SB_HDR});
-    const data=await r.json();
-    if(Array.isArray(data)){
-      S.regs=data.map(d=>({id:d.reg_id,timestamp:d.timestamp,operation:d.operation,operationLabel:d.operation_label,countryType:d.country_type,country:d.country,tractor:d.tractor,trailer:d.trailer,reference:d.reference,notes:d.notes,voiceText:d.voice_text}));
-      if(S.regs.length>0){
-        const lastN=parseInt(S.regs[S.regs.length-1].id.replace('CAM-',''))||0;
-        if(lastN>regN)regN=lastN;
-      }
-    }
-  }catch(e){console.error('Supabase load error',e);}
-}
-
-async function deleteRegFromCloud(regId){
-  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=eq.'+encodeURIComponent(regId),{method:'DELETE',headers:SB_HDR});}catch(e){}
-}
-
-async function deleteAllRegsFromCloud(){
-  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=neq.impossible',{method:'DELETE',headers:SB_HDR});}catch(e){}
-}
-
-async function updateVoiceInCloud(regId,voiceText){
-  try{await fetch(SB_URL+'/rest/v1/Registros?reg_id=eq.'+encodeURIComponent(regId),{method:'PATCH',headers:{...SB_HDR,'Prefer':'return=minimal'},body:JSON.stringify({voice_text:voiceText})});}catch(e){}
-}
-
-/* ── PERSISTENCE (localStorage para preferencias, Supabase para registros) ── */
-function saveRegs(){try{localStorage.setItem('arrivia_n',String(regN));}catch(e){}}
-function loadRegs(){try{const n=localStorage.getItem('arrivia_n');if(n)regN=parseInt(n)||0;S.adminLight=localStorage.getItem('arrivia_light')==='1';}catch(e){}}
+/* ── PERSISTENCE ── */
+function saveRegs(){try{localStorage.setItem('arrivia_regs',JSON.stringify(S.regs));localStorage.setItem('arrivia_n',String(regN));}catch(e){}}
+function loadRegs(){try{const r=localStorage.getItem('arrivia_regs');const n=localStorage.getItem('arrivia_n');if(r)S.regs=JSON.parse(r);if(n)regN=parseInt(n)||0;S.adminLight=localStorage.getItem('arrivia_light')==='1';}catch(e){}}
 function toggleLight(){S.adminLight=!S.adminLight;try{localStorage.setItem('arrivia_light',S.adminLight?'1':'0');}catch(e){}render();}
 loadRegs();
 if(IS_ADMIN_URL){S.adminAuth=true;S.mode='admin';}
-render();
-loadRegsFromCloud().then(()=>render());
-// Anti-pausa Supabase: ping cada 4 días
-(async function keepAlive(){
-  try{
-    const last=parseInt(localStorage.getItem('arrivia_ping')||'0');
-    const now=Date.now();
-    if(now-last > 4*24*60*60*1000){
-      await fetch(SB_URL+'/rest/v1/Registros?select=reg_id&limit=1',{headers:SB_HDR});
-      localStorage.setItem('arrivia_ping',String(now));
-    }
-  }catch(e){}
-})();
-setInterval(()=>{if(S.mode==='admin'&&!S.detailReg){loadRegsFromCloud().then(()=>render());}},10000);
+
+/* ── ACTIONS ── */
 function goLang(lk){S.lang=lk;S.screen='operation';render();}
 function goOp(opKey){S.op=opKey;S.screen=OP_CTRY[opKey]?'country':'vehicle';render();}
 function goCountry(cId){S.country=cId;S.screen='vehicle';render();}
@@ -481,10 +395,8 @@ function submitVehicle(){
   if(Object.keys(e).length){S.errors=e;render();return;}
   const id=nextId();
   const ctry=S.country?COUNTRIES.find(c=>c.id===S.country):null;
-  const newReg={id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice};
-  S.regs.push(newReg);
+  S.regs.push({id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice});
   saveRegs();
-  saveRegToCloud(newReg);
   S.screen='confirmation';render();
 }
 function resetKiosk(){stopCountdown();S.screen='language';S.lang='es';S.op=null;S.country=null;S.veh={tractor:'',trailer:'',reference:'',notes:''};S.errors={};S.pendingVoice='';S.voiceState='idle';S.voiceError='';render();}
@@ -500,8 +412,8 @@ function clearDetail(){S.detailReg=null;render();}
 function doSearch(v){S.searchQ=v;render();}
 function setHistFilter(k,v){S.histFilter[k]=v;render();}
 function clearHistFilters(){S.histFilter={op:'',country:'',dateFrom:'',dateTo:''};render();}
-function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();deleteRegFromCloud(regId);S.detailReg=null;render();}
-function deleteAllRegs(){if(!confirm('¿Eliminar TODOS los registros? Esta acción no se puede deshacer.'))return;S.regs=[];regN=0;saveRegs();deleteAllRegsFromCloud();S.detailReg=null;render();}
+function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();S.detailReg=null;render();}
+function deleteAllRegs(){if(!confirm('¿Eliminar TODOS los registros? Esta acción no se puede deshacer.'))return;S.regs=[];regN=0;saveRegs();S.detailReg=null;render();}
 function exportAllPDF(){
   if(!S.regs.length){alert('No hay registros para exportar.');return;}
   const w=window.open('','_blank');
@@ -632,19 +544,9 @@ function render(){
     } else {
       const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
       const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input id="searchInput" class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}">${noRes}${rows}`;
+      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)">${noRes}${rows}`;
     }
-    app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="changePin()">🔑 Cambiar PIN</button><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
-    // Attach search input handler after render
-    if(S.adminTab==='search'&&!S.detailReg){
-      setTimeout(()=>{
-        const inp=document.getElementById('searchInput');
-        if(inp){
-          inp.addEventListener('input',(e)=>{S.searchQ=e.target.value;render();});
-          inp.focus();
-        }
-      },0);
-    }
+    app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
     return;
   }
 
