@@ -625,6 +625,8 @@ function render(){
             if(el) el.innerHTML=noRes+rows;
           });
           inp.focus();
+          var len=inp.value.length;
+          inp.setSelectionRange(len,len);
           inp.setAttribute('dir','ltr');
           inp.style.direction='ltr';
           inp.style.textAlign='left';
