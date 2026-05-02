@@ -625,6 +625,10 @@ function render(){
             if(el) el.innerHTML=noRes+rows;
           });
           inp.focus();
+          inp.setAttribute('dir','ltr');
+          inp.style.direction='ltr';
+          inp.style.textAlign='left';
+          inp.style.unicodeBidi='bidi-override';
         }
       },50);
     }
