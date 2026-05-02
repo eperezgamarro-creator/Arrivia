@@ -494,7 +494,7 @@ function goAdmin(){
   S.mode='pin';S.pinInput='';S.pinError=false;render();
 }
 function goKiosk(){S.mode='kiosk';S.adminAuth=false;render();}
-function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;render();}
+function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;if(tab==='search')S.searchQ='';render();}
 function setDetail(reg){S.detailReg=reg;render();}
 function clearDetail(){S.detailReg=null;render();}
 function doSearch(v){
