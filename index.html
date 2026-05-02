@@ -624,13 +624,14 @@ function render(){
             var el=document.getElementById('searchResults');
             if(el) el.innerHTML=noRes+rows;
           });
-          inp.focus();
-          var len=inp.value.length;
-          inp.setSelectionRange(len,len);
           inp.setAttribute('dir','ltr');
           inp.style.direction='ltr';
           inp.style.textAlign='left';
           inp.style.unicodeBidi='bidi-override';
+          inp.addEventListener('focus',function(){
+            var len=this.value.length;
+            this.setSelectionRange(len,len);
+          });
         }
       },50);
     }
