@@ -128,7 +128,8 @@ textarea.field-input{resize:none;min-height:90px}
 .voice-box-txt{font-size:14px;color:var(--tx);line-height:1.55}
 .btn-pdf{background:var(--blu);border:none;border-radius:6px;padding:12px 24px;color:#fff;font-family:var(--hb);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
 .btn-pdf:hover{background:var(--bld)}
-.search-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:15px;outline:none;margin-bottom:16px;direction:ltr !important;text-align:left !important;unicode-bidi:plaintext}
+.search-wrap{direction:ltr !important;unicode-bidi:bidi-override}
+.search-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:15px;outline:none;margin-bottom:16px;direction:ltr !important;text-align:left !important;unicode-bidi:bidi-override !important}
 .search-input:focus{border-color:var(--blu)}
 .search-input::placeholder{color:var(--tx3)}
 .search-row{background:var(--card);border:1px solid var(--brd);border-radius:6px;padding:12px 16px;display:flex;align-items:center;gap:16px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;color:var(--tx)}
@@ -497,7 +498,14 @@ function goKiosk(){S.mode='kiosk';S.adminAuth=false;render();}
 function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;render();}
 function setDetail(reg){S.detailReg=reg;render();}
 function clearDetail(){S.detailReg=null;render();}
-function doSearch(v){S.searchQ=v;render();}
+function doSearch(v){
+  S.searchQ=v;
+  const sres=S.searchQ.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(S.searchQ.toLowerCase())||r.tractor.toLowerCase().includes(S.searchQ.toLowerCase())||(r.trailer||'').toLowerCase().includes(S.searchQ.toLowerCase())):[],
+  noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'',
+  rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
+  const resultsDiv=document.querySelector('.search-results');
+  if(resultsDiv) resultsDiv.innerHTML=noRes+rows;
+}
 function setHistFilter(k,v){S.histFilter[k]=v;render();}
 function clearHistFilters(){S.histFilter={op:'',country:'',dateFrom:'',dateTo:''};render();}
 function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();deleteRegFromCloud(regId);S.detailReg=null;render();}
@@ -632,20 +640,9 @@ function render(){
     } else {
       const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
       const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input id="searchInput" class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}">${noRes}${rows}`;
+      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><div class="search-wrap"><input id="searchInput" class="search-input" dir="ltr" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)"></div><div class="search-results">${noRes}${rows}</div>`;
     }
     app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="changePin()">🔑 Cambiar PIN</button><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
-    // Attach search input handler after render
-    if(S.adminTab==='search'&&!S.detailReg){
-      setTimeout(()=>{
-        const inp=document.getElementById('searchInput');
-        if(inp){
-          inp.addEventListener('input',(e)=>{S.searchQ=e.target.value;render();});
-          inp.focus();
-        }
-      },0);
-    }
-    return;
   }
 
   /* ── KIOSK ── */
