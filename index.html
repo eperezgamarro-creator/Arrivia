@@ -635,6 +635,7 @@ function render(){
     return;
   }
   if(S.mode==='admin'){
+    document.body.dir='ltr';document.documentElement.dir='ltr';
     const lastReg=S.regs.length?S.regs[S.regs.length-1]:null;
     const sres=S.searchQ.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(S.searchQ.toLowerCase())||r.tractor.toLowerCase().includes(S.searchQ.toLowerCase())||(r.trailer||'').toLowerCase().includes(S.searchQ.toLowerCase())):[];
     let body='';
