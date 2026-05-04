@@ -330,8 +330,26 @@ function getStats(){
 /* ── TICKET ── */
 function printTicket(regId){
   const reg=S.regs.find(r=>r.id===regId);if(!reg)return;
-  const w=window.open('','_blank','width=320,height=420');if(!w)return;
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket ${reg.id}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:16px;width:280px;color:#0d1b2a}h1{font-size:12px;text-align:center;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a;border-bottom:2px dashed #aac;padding-bottom:8px;margin-bottom:12px}.id{text-align:center;font-size:30px;font-weight:bold;color:#1a6eff;font-family:monospace;letter-spacing:4px;margin-bottom:12px}.row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;gap:8px}.lbl{color:#666;flex-shrink:0}.val{font-weight:bold;text-align:right}.sep{border:none;border-top:1px dashed #ccc;margin:10px 0}.ft{text-align:center;font-size:9px;color:#888;margin-top:10px;line-height:1.5}@media print{@page{size:80mm auto;margin:4mm}body{width:72mm}}</style></head><body><h1>ARRIVIA — Ticket de llegada</h1><div class="id">${reg.id}</div><div class="row"><span class="lbl">Fecha / Hora</span><span class="val">${fmtDate(reg.timestamp)}</span></div><div class="row"><span class="lbl">Operación</span><span class="val">${reg.operationLabel}</span></div>${reg.country?`<div class="row"><span class="lbl">País</span><span class="val">${reg.country}</span></div>`:''}<hr class="sep"><div class="row"><span class="lbl">Tractora</span><span class="val">${reg.tractor}</span></div>${reg.trailer?`<div class="row"><span class="lbl">Remolque</span><span class="val">${reg.trailer}</span></div>`:''}${reg.reference?`<div class="row"><span class="lbl">Referencia</span><span class="val">${reg.reference}</span></div>`:''}<hr class="sep"><div class="ft">Espere en su vehículo<br>hasta ser llamado con el número de muelle</div></body></html>`);
+  const lang=reg.lang||'es';
+  const tL=T[lang]||T['es'];
+  const isEs=lang==='es';
+  const isRtl=tL.dir==='rtl';
+  const bi=(esText,langText)=>isEs||!langText?`<span>${esText}</span>`:`<span>${esText}</span><br><span style="color:#444;font-style:italic;direction:${isRtl?'rtl':'ltr'};unicode-bidi:bidi-override">${langText}</span>`;
+  const w=window.open('','_blank','width=360,height=700');if(!w)return;
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Ticket ${reg.id}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:16px;width:280px;color:#0d1b2a}h1{font-size:11px;text-align:center;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a;border-bottom:2px dashed #aac;padding-bottom:8px;margin-bottom:12px}.id{text-align:center;font-size:30px;font-weight:bold;color:#1a6eff;font-family:monospace;letter-spacing:4px;margin-bottom:12px}.row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;gap:8px;align-items:flex-start}.lbl{color:#555;flex-shrink:0;line-height:1.5;max-width:130px}.val{font-weight:bold;text-align:right;line-height:1.5}.sep{border:none;border-top:1px dashed #ccc;margin:10px 0}.ft{text-align:center;font-size:10px;color:#222;margin-top:10px;line-height:1.7;padding:8px 6px;border:1px dashed #99b;border-radius:4px}.warn{text-align:center;font-size:10px;color:#c00;margin-top:8px;line-height:1.7;font-weight:bold;padding:6px;border:1px solid #f99;border-radius:4px;background:#fff5f5}@media print{@page{size:80mm auto;margin:4mm}body{width:72mm}}</style></head><body>
+  <h1>ARRIVIA — Ticket de llegada</h1>
+  <div class="id">${reg.id}</div>
+  <div class="row"><span class="lbl">${bi('Fecha / Hora','')}</span><span class="val">${fmtDate(reg.timestamp)}</span></div>
+  <div class="row"><span class="lbl">${bi('Operación',tL.ops&&tL.ops[reg.operation]?tL.ops[reg.operation]:'')}</span><span class="val">${reg.operationLabel}</span></div>
+  ${reg.country?`<div class="row"><span class="lbl">${bi('País','')}</span><span class="val">${reg.country}</span></div>`:''}
+  <hr class="sep">
+  <div class="row"><span class="lbl">${bi('Tractora',tL.tractor)}</span><span class="val">${reg.tractor}</span></div>
+  ${reg.trailer?`<div class="row"><span class="lbl">${bi('Remolque',tL.trailer)}</span><span class="val">${reg.trailer}</span></div>`:''}
+  ${reg.reference?`<div class="row"><span class="lbl">${bi('Referencia',tL.reference)}</span><span class="val">${reg.reference}</span></div>`:''}
+  <hr class="sep">
+  <div class="ft">${bi('Espere en su vehículo hasta ser llamado con el número de muelle.',tL.regMsg)}</div>
+  <div class="warn">${bi('⚠️ Conserve este ticket en todo momento. Puede ser requerido por el personal.',isEs?'':('⚠️ '+tL.regMsg.substring(0,60)+'...'))}</div>
+  </body></html>`);
   w.document.close();setTimeout(()=>{w.focus();w.print();},400);
 }
 
@@ -481,7 +499,7 @@ function submitVehicle(){
   if(Object.keys(e).length){S.errors=e;render();return;}
   const id=nextId();
   const ctry=S.country?COUNTRIES.find(c=>c.id===S.country):null;
-  const newReg={id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice};
+  const newReg={id,timestamp:new Date().toISOString(),operation:S.op,operationLabel:OP_ES[S.op],countryType:OP_CTRY[S.op],country:ctry?ctry.es:null,tractor:v.tractor.trim().toUpperCase(),trailer:v.trailer.trim().toUpperCase(),reference:v.reference.trim(),notes:v.notes.trim(),voiceText:S.pendingVoice,lang:S.lang};
   S.regs.push(newReg);
   saveRegs();
   saveRegToCloud(newReg);
@@ -497,14 +515,7 @@ function goKiosk(){S.mode='kiosk';S.adminAuth=false;render();}
 function setAdminTab(tab){S.adminTab=tab;S.detailReg=null;render();}
 function setDetail(reg){S.detailReg=reg;render();}
 function clearDetail(){S.detailReg=null;render();}
-function doSearch(v){
-  S.searchQ=v;
-  const sres=v.trim()?S.regs.filter(r=>r.id.toLowerCase().includes(v.toLowerCase())||r.tractor.toLowerCase().includes(v.toLowerCase())||(r.trailer||'').toLowerCase().includes(v.toLowerCase())):[];
-  const noRes=v.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-  const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
-  const el=document.getElementById('searchResults');
-  if(el) el.innerHTML=noRes+rows;
-}
+function doSearch(v){S.searchQ=v;render();}
 function setHistFilter(k,v){S.histFilter[k]=v;render();}
 function clearHistFilters(){S.histFilter={op:'',country:'',dateFrom:'',dateTo:''};render();}
 function deleteReg(regId){if(!confirm('¿Eliminar registro '+regId+'?'))return;S.regs=S.regs.filter(r=>r.id!==regId);saveRegs();deleteRegFromCloud(regId);S.detailReg=null;render();}
@@ -515,8 +526,9 @@ function exportAllPDF(){
   if(!w){alert('Permite ventanas emergentes.');return;}
   let rows=S.regs.map(reg=>`<tr><td>${reg.id}</td><td>${fmtDate(reg.timestamp)}</td><td>${reg.operationLabel}</td><td>${reg.country||'—'}</td><td>${reg.tractor}</td><td>${reg.trailer}</td><td>${reg.reference}</td></tr>`).join('');
   w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>ARRIVIA – Todos los registros</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:30px;color:#0d1b2a}.hd{text-align:center;border-bottom:3px solid #0d2a4a;padding-bottom:12px;margin-bottom:20px}h1{font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a}p{font-size:11px;color:#666;margin-top:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#0d2a4a;color:#fff;padding:7px 8px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #dde}tr:hover td{background:#f5f8ff}.id{font-weight:bold;color:#1a6eff;font-family:monospace}@media print{button{display:none}}</style></head><body><div class="hd"><h1>ARRIVIA — Exportación de registros</h1><p>Total: ${S.regs.length} registros · Generado: ${fmtDate(new Date().toISOString())}</p></div><table><thead><tr><th>Nº Registro</th><th>Fecha/Hora</th><th>Operación</th><th>País</th><th>Tractora</th><th>Remolque</th><th>Referencia</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  w.document.write('<div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:center"><button onclick="window.print()" style="background:#1a6eff;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">🖨️ Imprimir</button><button onclick="downloadPDF()" style="background:#0d2a4a;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">⬇️ Descargar HTML</button></div>');
+  w.document.write('<script>function downloadPDF(){const blob=new Blob([document.documentElement.outerHTML],{type:"text/html"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="'+reg.id+'.html";a.click();}<\/script>');
   w.document.close();
-  setTimeout(()=>{w.focus();w.print();},400);
 }
 
 /* ── EMAIL ── */
@@ -563,8 +575,34 @@ function printPDF(regId){
   w.document.write('</div>');
   if(reg.voiceText)w.document.write('<div class="vb"><div class="lb">Mensaje de voz (traducido al español)</div><div class="vl">'+reg.voiceText+'</div></div>');
   w.document.write('</body></html>');
+  w.document.write('<div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:center"><button onclick="window.print()" style="background:#1a6eff;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">🖨️ Imprimir</button><button onclick="downloadPDF()" style="background:#0d2a4a;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">⬇️ Descargar HTML</button></div>');
+  w.document.write('<script>function downloadPDF(){const blob=new Blob([document.documentElement.outerHTML],{type:"text/html"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="'+reg.id+'.html";a.click();}<\/script>');
   w.document.close();
-  setTimeout(()=>{w.focus();w.print();},400);
+}
+
+function downloadReg(regId){
+  const reg=S.regs.find(r=>r.id===regId);if(!reg)return;
+  const lines=[
+    'ARRIVIA — Registro de Llegada',
+    '================================',
+    'ID: '+reg.id,
+    'Fecha: '+fmtDate(reg.timestamp),
+    'Operación: '+reg.operationLabel,
+    'País: '+(reg.country||'—'),
+    'Tractora: '+reg.tractor,
+    'Remolque: '+(reg.trailer||'—'),
+    'Referencia: '+(reg.reference||'—'),
+    'Observaciones: '+(reg.notes||'—'),
+    reg.voiceText?'Voz: '+reg.voiceText:'',
+    '================================',
+    'ARRIVIA · Moldtrans'
+  ].filter(Boolean).join('\n');
+  const blob=new Blob([lines],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=reg.id+'.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 /* ── MIC HTML ── */
@@ -594,7 +632,7 @@ function regDetailHtml(reg){
   ];
   const grid=fields.map(f=>`<div class="dfield${f.big?' big':''}${f.full?' full':''}"><div class="dfield-lbl">${esc(f.lb)}</div><div class="dfield-val">${esc(f.vl)}</div></div>`).join('');
   const voice=reg.voiceText?`<div class="voice-box"><div class="voice-box-lbl">Mensaje de voz (traducido al español)</div><div class="voice-box-txt">${esc(reg.voiceText)}</div></div>`:'';
-  return `<div class="detail-grid">${grid}</div>${voice}<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn-pdf" onclick="printPDF('${esc(reg.id)}')">📄 EXPORTAR PDF</button><button class="btn-email" onclick="sendEmail('${esc(reg.id)}')">✉️ ENVIAR CORREO</button><button class="btn-ticket" onclick="printTicket('${esc(reg.id)}')">🎫 IMPRIMIR TICKET</button><button class="btn-danger" onclick="deleteReg('${esc(reg.id)}')">🗑 ELIMINAR</button></div>`;
+  return `<div class="detail-grid">${grid}</div>${voice}<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn-pdf" onclick="printPDF('${esc(reg.id)}')">📄 EXPORTAR PDF</button><button class="btn-pdf" onclick="downloadReg('${esc(reg.id)}')">⬇️ DESCARGAR</button><button class="btn-email" onclick="sendEmail('${esc(reg.id)}')">✉️ ENVIAR CORREO</button><button class="btn-ticket" onclick="printTicket('${esc(reg.id)}')">🎫 IMPRIMIR TICKET</button><button class="btn-danger" onclick="deleteReg('${esc(reg.id)}')">🗑 ELIMINAR</button></div>`;
 }
 
 /* ── RENDER ── */
@@ -639,7 +677,7 @@ function render(){
     } else {
       const rows=sres.map(r=>`<button class="search-row" onclick="setDetail(S.regs.find(x=>x.id==='${esc(r.id)}'))"><span class="search-row-id">${esc(r.id)}</span><span class="search-row-date">${esc(fmtDate(r.timestamp))}</span><span class="search-row-op">${esc(r.operationLabel)}</span><span class="search-row-plates">${esc(r.tractor)} / ${esc(r.trailer||'—')}</span></button>`).join('');
       const noRes=S.searchQ.trim()&&sres.length===0?'<p style="color:var(--tx2);font-size:14px">Sin resultados.</p>':'';
-      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)"><div id="searchResults">${noRes}${rows}</div>`;
+      body=`<div class="admin-sec-title">BÚSQUEDA DE REGISTROS</div><input class="search-input" placeholder="Buscar por matrícula o número de registro..." value="${esc(S.searchQ)}" oninput="doSearch(this.value)">${noRes}${rows}`;
     }
     app.innerHTML=`<div class="admin-wrap${S.adminLight?' light':''}"><div class="admin-hdr"><span style="font-size:28px">🚛</span><div><h1>ARRIVIA — Administración</h1><p>Panel de gestión · ${S.regs.length} registro(s) almacenado(s)</p></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="btn-theme" onclick="changePin()">🔑 Cambiar PIN</button><button class="btn-theme" onclick="toggleLight()">${S.adminLight?'🌙 Modo oscuro':'☀️ Modo claro'}</button><button class="btn-sm-back" onclick="goKiosk()">🔒 Cerrar sesión</button></div></div><div class="admin-tabs"><button class="admin-tab${S.adminTab==='last'&&!S.detailReg?' active':''}" onclick="setAdminTab('last')">📊 RESUMEN</button><button class="admin-tab${S.adminTab==='history'&&!S.detailReg?' active':''}" onclick="setAdminTab('history')">🗂 HISTORIAL</button><button class="admin-tab${S.adminTab==='search'&&!S.detailReg?' active':''}" onclick="setAdminTab('search')">🔍 BÚSQUEDA</button>${S.detailReg?`<button class="admin-tab detail-tab">📄 DETALLE: ${esc(S.detailReg.id)}</button>`:''}</div><div class="admin-body">${body}</div></div>`;
     return;
