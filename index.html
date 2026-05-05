@@ -255,7 +255,7 @@ const COUNTRIES=[
 ];
 const OP_ORDER=['delivery','pickup','customs','communication','incident'];
 const OP_ICONS={delivery:'<span style="font-size:36px;font-weight:900;color:#7db8ff;line-height:1;font-family:Arial,sans-serif">&#8594;</span>',pickup:'<span style="font-size:36px;font-weight:900;color:#7db8ff;line-height:1;font-family:Arial,sans-serif">&#8592;</span>',customs:'🛃',communication:'💬',incident:'⚠️'};
-const OP_CTRY={delivery:'origen',pickup:'destino',customs:'origen',communication:null,incident:null};
+const OP_CTRY={delivery:'origen',pickup:'destino',customs:'origen',communication:'origen',incident:'origen'};
 const OP_ES={delivery:'Descarga / Entrega',pickup:'Carga / Recogida',customs:'Gestión Aduana',communication:'Comunicación',incident:'Incidencia'};
 
 /* ── STATE ── */
@@ -433,7 +433,7 @@ const SB_HDR={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':
 
 async function saveRegToCloud(reg){
   try{
-    const body={reg_id:reg.id,timestamp:reg.timestamp,operation:reg.operation,operation_label:reg.operationLabel,country_type:reg.countryType||'',country:reg.country||'',tractor:reg.tractor,trailer:reg.trailer||'',reference:reg.reference||'',notes:reg.notes||'',voice_text:reg.voiceText||''};
+    const body={reg_id:reg.id,timestamp:reg.timestamp,operation:reg.operation,operation_label:reg.operationLabel,country_type:reg.countryType||'',country:reg.country||'',tractor:reg.tractor,trailer:reg.trailer||'',reference:reg.reference||'',notes:reg.notes||'',voice_text:reg.voiceText||'',lang:reg.lang||'es'};
     await fetch(SB_URL+'/rest/v1/Registros',{method:'POST',headers:{...SB_HDR,'Prefer':'return=minimal'},body:JSON.stringify(body)});
   }catch(e){console.error('Supabase save error',e);}
 }
@@ -443,7 +443,7 @@ async function loadRegsFromCloud(){
     const r=await fetch(SB_URL+'/rest/v1/Registros?select=*&order=created_at.asc',{headers:SB_HDR});
     const data=await r.json();
     if(Array.isArray(data)){
-      S.regs=data.map(d=>({id:d.reg_id,timestamp:d.timestamp,operation:d.operation,operationLabel:d.operation_label,countryType:d.country_type,country:d.country,tractor:d.tractor,trailer:d.trailer,reference:d.reference,notes:d.notes,voiceText:d.voice_text}));
+      S.regs=data.map(d=>({id:d.reg_id,timestamp:d.timestamp,operation:d.operation,operationLabel:d.operation_label,countryType:d.country_type,country:d.country,tractor:d.tractor,trailer:d.trailer,reference:d.reference,notes:d.notes,voiceText:d.voice_text,lang:d.lang||'es'}));
       if(S.regs.length>0){
         const lastN=parseInt(S.regs[S.regs.length-1].id.replace('CAM-',''))||0;
         if(lastN>regN)regN=lastN;
@@ -524,11 +524,25 @@ function exportAllPDF(){
   if(!S.regs.length){alert('No hay registros para exportar.');return;}
   const w=window.open('','_blank');
   if(!w){alert('Permite ventanas emergentes.');return;}
-  let rows=S.regs.map(reg=>`<tr><td>${reg.id}</td><td>${fmtDate(reg.timestamp)}</td><td>${reg.operationLabel}</td><td>${reg.country||'—'}</td><td>${reg.tractor}</td><td>${reg.trailer}</td><td>${reg.reference}</td></tr>`).join('');
-  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>ARRIVIA – Todos los registros</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:30px;color:#0d1b2a}.hd{text-align:center;border-bottom:3px solid #0d2a4a;padding-bottom:12px;margin-bottom:20px}h1{font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a}p{font-size:11px;color:#666;margin-top:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#0d2a4a;color:#fff;padding:7px 8px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #dde}tr:hover td{background:#f5f8ff}.id{font-weight:bold;color:#1a6eff;font-family:monospace}@media print{button{display:none}}</style></head><body><div class="hd"><h1>ARRIVIA — Exportación de registros</h1><p>Total: ${S.regs.length} registros · Generado: ${fmtDate(new Date().toISOString())}</p></div><table><thead><tr><th>Nº Registro</th><th>Fecha/Hora</th><th>Operación</th><th>País</th><th>Tractora</th><th>Remolque</th><th>Referencia</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
-  w.document.write('<div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:center"><button onclick="window.print()" style="background:#1a6eff;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">🖨️ Imprimir</button><button onclick="downloadPDF()" style="background:#0d2a4a;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">⬇️ Descargar HTML</button></div>');
-  w.document.write('<script>function downloadPDF(){const blob=new Blob([document.documentElement.outerHTML],{type:"text/html"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="'+reg.id+'.html";a.click();}<\/script>');
+  const specialOps=['communication','incident'];
+  const rows=S.regs.map(reg=>{
+    const isSpecial=specialOps.includes(reg.operation);
+    const bg=isSpecial?'background:#fff8e1;':'';
+    const badge=isSpecial?`<span style="background:${reg.operation==='incident'?'#fee2e2':'#fef3c7'};color:${reg.operation==='incident'?'#991b1b':'#92400e'};font-size:9px;padding:1px 5px;border-radius:3px;font-weight:bold;margin-left:4px">${reg.operation==='incident'?'⚠️':'📢'}</span>`:'';
+    return `<tr style="${bg}"><td class="id">${reg.id}</td><td>${fmtDate(reg.timestamp)}</td><td>${reg.operationLabel}${badge}</td><td>${reg.country||'—'}</td><td>${reg.tractor}</td><td>${reg.trailer||'—'}</td><td>${reg.reference||'—'}</td></tr>`;
+  }).join('');
+  const filename='ARRIVIA-export-'+new Date().toISOString().slice(0,10)+'.html';
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>ARRIVIA – Todos los registros</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:30px;color:#0d1b2a}.hd{text-align:center;border-bottom:3px solid #0d2a4a;padding-bottom:12px;margin-bottom:20px}h1{font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a}p{font-size:11px;color:#666;margin-top:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#0d2a4a;color:#fff;padding:7px 8px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #dde}.id{font-weight:bold;color:#1a6eff;font-family:monospace}.btns{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:center}@media print{.btns{display:none}}</style></head><body><div class="hd"><h1>ARRIVIA — Exportación de registros</h1><p>Total: ${S.regs.length} registros · Generado: ${fmtDate(new Date().toISOString())}</p></div><table><thead><tr><th>Nº Registro</th><th>Fecha/Hora</th><th>Operación</th><th>País</th><th>Tractora</th><th>Remolque</th><th>Referencia</th></tr></thead><tbody>${rows}</tbody></table><div class="btns"><button onclick="window.print()" style="background:#1a6eff;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">🖨️ Imprimir</button><button id="dlBtn" style="background:#0d2a4a;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">⬇️ Descargar</button></div></body></html>`);
   w.document.close();
+  w.onload=function(){
+    w.document.getElementById('dlBtn').onclick=function(){
+      const blob=new w.Blob([w.document.documentElement.outerHTML],{type:'text/html'});
+      const a=w.document.createElement('a');
+      a.href=w.URL.createObjectURL(blob);
+      a.download='${filename}';
+      a.click();
+    };
+  };
 }
 
 /* ── EMAIL ── */
@@ -562,7 +576,9 @@ function printPDF(regId){
   const w=window.open('','_blank');
   if(!w){alert('Permite ventanas emergentes para generar el PDF.');return;}
   w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>'+reg.id+'</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:40px;color:#0d1b2a;line-height:1.4}.hd{text-align:center;border-bottom:3px solid #0d2a4a;padding-bottom:16px;margin-bottom:24px}.hd h1{font-size:18px;letter-spacing:2px;text-transform:uppercase;color:#0d2a4a}.hd p{font-size:11px;color:#666;margin-top:6px}.rn{text-align:center;font-size:36px;font-weight:bold;color:#1a6eff;letter-spacing:5px;margin:16px 0 24px;font-family:monospace}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}.f{background:#f0f6ff;border-left:4px solid #1a6eff;padding:10px 14px;border-radius:0 4px 4px 0}.f.full{grid-column:1/-1}.lb{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5577aa;font-weight:bold;margin-bottom:3px}.vl{font-size:16px;font-weight:bold;color:#0d1b2a}.vb{background:#fff8e1;border:1px solid #f5a623;padding:12px 14px;border-radius:4px;margin-bottom:20px}.vb .lb{color:#c67d00}.vb .vl{font-size:13px;font-weight:normal;line-height:1.5}.ft{text-align:center;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:12px;margin-top:20px}@media print{button{display:none}}</style></head><body>');
-  w.document.write('<div class="hd"><h1>Registro de Llegada de Camión</h1><p>Sistema de control de acceso · Documento generado automáticamente</p></div>');
+  const isSpecialOp=['communication','incident'].includes(reg.operation);
+  const specialBanner=isSpecialOp?`<div style="background:${reg.operation==='incident'?'#fee2e2':'#fef3c7'};border:2px solid ${reg.operation==='incident'?'#dc2626':'#d97706'};border-radius:6px;padding:12px;text-align:center;margin-bottom:16px;font-weight:bold;font-size:14px;color:${reg.operation==='incident'?'#991b1b':'#92400e'}">${reg.operation==='incident'?'⚠️ INCIDENCIA — Requiere atención inmediata':'📢 COMUNICACIÓN — Aviso al departamento correspondiente'}</div>`:'';
+  w.document.write('<div class="hd"><h1>Registro de Llegada de Camión</h1><p>Sistema de control de acceso · Documento generado automáticamente</p></div>'+specialBanner);
   w.document.write('<div class="rn">'+reg.id+'</div>');
   w.document.write('<div class="grid">');
   w.document.write('<div class="f full"><div class="lb">Fecha y hora de registro</div><div class="vl">'+fmtDate(reg.timestamp)+'</div></div>');
